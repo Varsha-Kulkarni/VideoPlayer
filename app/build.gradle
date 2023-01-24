@@ -45,9 +45,19 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    def mediaVersion = "1.0.0-beta03"
+//    def mediaVersion = "1.0.0-beta03"
+//
+//    implementation "androidx.media3:media3-exoplayer:$mediaVersion"
+//    implementation "androidx.media3:media3-ui:$mediaVersion"
+//    implementation "androidx.media3:media3-exoplayer-dash:$mediaVersion"
 
-    implementation "androidx.media3:media3-exoplayer:$mediaVersion"
-    implementation "androidx.media3:media3-ui:$mediaVersion"
-    implementation "androidx.media3:media3-exoplayer-dash:$mediaVersion"
+    def exoplayer = "2.18.2"
+
+    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer"
+    implementation "com.google.android.exoplayer:exoplayer-dash:$exoplayer"
+    implementation "com.google.android.exoplayer:exoplayer-hls:$exoplayer"
+    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer"
+
+    implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
+
 }
