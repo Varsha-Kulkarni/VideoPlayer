@@ -1,37 +1,35 @@
 package dev.varshakulkarni.videoplayer
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
+import android.util.SparseArray
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MimeTypes
-import androidx.media3.common.Player
-import androidx.media3.common.util.Util
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import at.huber.youtubeExtractor.VideoMeta
+import at.huber.youtubeExtractor.YouTubeExtractor
+import at.huber.youtubeExtractor.YtFile
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.MergingMediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.google.android.exoplayer2.util.Util
 import dev.varshakulkarni.videoplayer.databinding.ActivityMainBinding
 
-private const val TAG = "PlayerActivity"
-
-/**
- * A fullscreen activity to play audio or video streams.
- */
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Player.Listener {
 
     private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityMainBinding.inflate(layoutInflater)
     }
 
-    private val playbackStateListener: Player.Listener = playbackStateListener()
     private var player: ExoPlayer? = null
 
     private var playWhenReady = true
     private var currentItem = 0
     private var playbackPosition = 0L
+
+    private lateinit var youtubeLink: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,27 +38,28 @@ class MainActivity : AppCompatActivity() {
 
     public override fun onStart() {
         super.onStart()
-        if (Util.SDK_INT > 23) {
-            initializePlayer()
-        }
+        val videoId = ""  //pass any video Id or replace with youtube video link
+        youtubeLink = "https://www.youtube.com/watch?v=$videoId"
+
+        initializePlayer()
+
     }
 
-    public override fun onResume() {
+    override fun onResume() {
         super.onResume()
-        hideSystemUi()
         if (Util.SDK_INT <= 23 || player == null) {
             initializePlayer()
         }
     }
 
-    public override fun onPause() {
+    override fun onPause() {
         super.onPause()
         if (Util.SDK_INT <= 23) {
             releasePlayer()
         }
     }
 
-    public override fun onStop() {
+    override fun onStop() {
         super.onStop()
         if (Util.SDK_INT > 23) {
             releasePlayer()
@@ -68,25 +67,51 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializePlayer() {
-        val trackSelector = DefaultTrackSelector(this).apply {
-            setParameters(buildUponParameters().setMaxVideoSizeSd())
-        }
-        player = ExoPlayer.Builder(this)
-            .setTrackSelector(trackSelector)
-            .build()
-            .also { exoPlayer ->
-                viewBinding.videoView.player = exoPlayer
+        player = ExoPlayer.Builder(this).build()
+        viewBinding.playerView.player = player
 
-                val mediaItem = MediaItem.Builder()
-                    .setUri(getString(R.string.media_url_dash))
-                    .setMimeType(MimeTypes.APPLICATION_MPD)
-                    .build()
-                exoPlayer.setMediaItem(mediaItem)
-                exoPlayer.playWhenReady = playWhenReady
-                exoPlayer.seekTo(currentItem, playbackPosition)
-                exoPlayer.addListener(playbackStateListener)
-                exoPlayer.prepare()
+        object : YouTubeExtractor(this) {
+            override fun onExtractionComplete(
+                ytFiles: SparseArray<YtFile>?,
+                videoMeta: VideoMeta?
+            ) {
+                if (ytFiles != null) {
+
+                    val iTag = 137//tag of video 1080
+                    val audioTag = 140 //tag m4a audio
+                    // 720, 1080, 480
+                    var videoUrl = ""
+                    val iTags: List<Int> = listOf(22, 137, 18)
+                    for (i in iTags) {
+                        val ytFile = ytFiles.get(i)
+                        if (ytFile != null) {
+                            val downloadUrl = ytFile.url
+                            if (downloadUrl != null && downloadUrl.isNotEmpty()) {
+                                videoUrl = downloadUrl
+                            }
+                        }
+                    }
+                    if (videoUrl == "")
+                        videoUrl = ytFiles[iTag].url
+                    val audioUrl = ytFiles[audioTag].url
+                    val audioSource: MediaSource = ProgressiveMediaSource
+                        .Factory(DefaultHttpDataSource.Factory())
+                        .createMediaSource(MediaItem.fromUri(audioUrl))
+                    val videoSource: MediaSource = ProgressiveMediaSource
+                        .Factory(DefaultHttpDataSource.Factory())
+                        .createMediaSource(MediaItem.fromUri(videoUrl))
+                    player?.setMediaSource(
+                        MergingMediaSource(true, videoSource, audioSource), true
+                    )
+                    player?.prepare()
+                    player?.playWhenReady = playWhenReady
+                    player?.seekTo(currentItem, playbackPosition)
+                    player?.addListener(this@MainActivity)
+                }
             }
+
+        }.extract(youtubeLink)
+
     }
 
     private fun releasePlayer() {
@@ -94,31 +119,17 @@ class MainActivity : AppCompatActivity() {
             playbackPosition = exoPlayer.currentPosition
             currentItem = exoPlayer.currentMediaItemIndex
             playWhenReady = exoPlayer.playWhenReady
-            exoPlayer.removeListener(playbackStateListener)
+            exoPlayer.removeListener(this@MainActivity)
             exoPlayer.release()
         }
         player = null
     }
 
-    @SuppressLint("InlinedApi")
-    private fun hideSystemUi() {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        WindowInsetsControllerCompat(window, viewBinding.videoView).let { controller ->
-            controller.hide(WindowInsetsCompat.Type.systemBars())
-            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+        if (playbackState == Player.STATE_READY) {
+            viewBinding.progressBar.visibility = View.INVISIBLE
+        } else {
+            viewBinding.progressBar.visibility = View.VISIBLE
         }
-    }
-}
-
-private fun playbackStateListener() = object : Player.Listener {
-    override fun onPlaybackStateChanged(playbackState: Int) {
-        val stateString: String = when (playbackState) {
-            ExoPlayer.STATE_IDLE -> "ExoPlayer.STATE_IDLE      -"
-            ExoPlayer.STATE_BUFFERING -> "ExoPlayer.STATE_BUFFERING -"
-            ExoPlayer.STATE_READY -> "ExoPlayer.STATE_READY     -"
-            ExoPlayer.STATE_ENDED -> "ExoPlayer.STATE_ENDED     -"
-            else -> "UNKNOWN_STATE             -"
-        }
-        Log.d(TAG, "changed state to $stateString")
     }
 }
