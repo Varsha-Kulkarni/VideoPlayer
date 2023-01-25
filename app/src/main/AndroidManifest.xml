@@ -26,6 +26,18 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity
+            android:name=".PlayerActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="youtu.be"
+                    android:mimeType="text/*" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
