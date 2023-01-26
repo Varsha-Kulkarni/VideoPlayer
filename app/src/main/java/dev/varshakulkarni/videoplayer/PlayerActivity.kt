@@ -5,13 +5,27 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.util.SparseArray
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
+import android.widget.LinearLayout
+import android.widget.PopupWindow
+import android.widget.SeekBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
+import androidx.lifecycle.Lifecycle
 import at.huber.youtubeExtractor.VideoMeta
 import at.huber.youtubeExtractor.YouTubeExtractor
 import at.huber.youtubeExtractor.YtFile
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.MergingMediaSource
@@ -34,9 +48,13 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
 
     private var youtubeLink: String? = null
 
+    private var popupView: View? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
+
+        setupMenu()
 
         Log.d("", "1.activity initialized")
 
@@ -144,6 +162,10 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
 
     }
 
+    private fun updatePlaybackParameters(playbackParameters: PlaybackParameters) {
+        player?.playbackParameters = playbackParameters
+    }
+
     private fun releasePlayer() {
         player?.let { exoPlayer ->
             playbackPosition = exoPlayer.currentPosition
@@ -161,5 +183,81 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         } else {
             viewBinding.progressBar.visibility = View.VISIBLE
         }
+    }
+
+    private fun setupMenu() {
+        val menuHost: MenuHost = this
+
+        menuHost.addMenuProvider(
+            object : MenuProvider {
+
+                override fun onPrepareMenu(menu: Menu) {
+
+                    super.onPrepareMenu(menu)
+
+                }
+
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.main_menu, menu)
+                }
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    when (menuItem.itemId) {
+                        R.id.action_settings -> {
+                            player?.pause()
+                            showSettingsPopup(this@PlayerActivity.viewBinding.parentLayout)
+                            val seekbar = popupView?.findViewById<SeekBar>(R.id.pitchSeekbar)
+                            val pitchValueText =
+                                popupView?.findViewById<TextView>(R.id.pitchValueText)
+                            seekbar?.setOnSeekBarChangeListener(object :
+                                SeekBar.OnSeekBarChangeListener {
+                                override fun onProgressChanged(
+                                    seekBar: SeekBar,
+                                    i: Int,
+                                    b: Boolean
+                                ) {
+                                    val pitch: Float = i.toFloat() / 5
+                                    val currentPlaybackParameters = player!!.playbackParameters
+                                    val speed: Float = currentPlaybackParameters.speed
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Speed:$speed",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    pitchValueText?.text = pitch.toString()
+
+                                    val newPlaybackParameters = PlaybackParameters(speed, pitch)
+                                    updatePlaybackParameters(newPlaybackParameters)
+                                }
+
+                                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                                }
+
+                                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                                }
+                            })
+
+                        }
+
+                    }
+                    return false
+                }
+            },
+            this, Lifecycle.State.RESUMED
+        )
+    }
+
+    fun showSettingsPopup(view: View?) {
+
+        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        popupView = inflater.inflate(R.layout.popup_settings, null)
+
+        val width = LinearLayout.LayoutParams.WRAP_CONTENT
+        val height = LinearLayout.LayoutParams.WRAP_CONTENT
+        val focus = true
+        val popupWindow = PopupWindow(popupView, width, height, focus)
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+
     }
 }
