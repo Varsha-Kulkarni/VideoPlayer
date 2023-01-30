@@ -1,4 +1,4 @@
-package dev.varshakulkarni.videoplayer
+package dev.varshakulkarni.videoplayer.ui
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -33,6 +33,7 @@ import com.google.android.exoplayer2.source.MergingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
+import dev.varshakulkarni.videoplayer.R
 import dev.varshakulkarni.videoplayer.databinding.ActivityPlayerBinding
 import kotlin.math.pow
 
