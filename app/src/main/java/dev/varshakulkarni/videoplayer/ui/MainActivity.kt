@@ -5,8 +5,10 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.Player
+import dagger.hilt.android.AndroidEntryPoint
 import dev.varshakulkarni.videoplayer.databinding.ActivityMainBinding
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), Player.Listener {
 
     private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
