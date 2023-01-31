@@ -1,5 +1,6 @@
 package dev.varshakulkarni.videoplayer.data
 
+import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.database.Cursor
@@ -10,15 +11,17 @@ import androidx.annotation.RequiresApi
 import dev.varshakulkarni.videoplayer.ui.VideoItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 interface VideoDataSource {
     suspend fun getVideos(): List<VideoItem>
 }
 
-class VideoRepository(
-    val contentResolver: ContentResolver,
+class VideoRepository @Inject constructor(
+    private val contentResolver: ContentResolver,
 ) : VideoDataSource {
 
+    @SuppressLint("Range")
     @RequiresApi(Build.VERSION_CODES.Q)
     override suspend fun getVideos(): List<VideoItem> = withContext(Dispatchers.IO) {
         val videos = mutableListOf<VideoItem>()
