@@ -48,8 +48,9 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
     private var playWhenReady = true
     private var currentItem = 0
     private var playbackPosition = 0L
+    private var localPlayback = false
 
-    private var youtubeLink: String? = null
+    private var videoUri: String? = null
 
     private var popupView: View? = null
 
@@ -62,17 +63,19 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         Log.d("", "1.activity initialized")
 
         intent.getStringExtra("youtube_link")?.let {
-            youtubeLink = it
+            videoUri = it
         }
 
         if (intent?.action == Intent.ACTION_SEND) {
-            Log.d("", "3.activity action send")
-
             intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-                Log.d("", "4.activity got intent extra $it")
-
-                youtubeLink = it
+                videoUri = it
             }
+        }
+
+        intent.getStringExtra("uri")?.let {
+            Log.d("Video Player URI", "uri $it")
+            videoUri = it
+            localPlayback = true
         }
 
     }
@@ -80,7 +83,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
     public override fun onStart() {
         super.onStart()
 
-        if (youtubeLink == null) {
+        if (videoUri == null) {
             AlertDialog.Builder(this)
                 .setTitle("Play Video")
                 .setMessage("Play any youtube video through ${this.resources.getString(R.string.app_name)}, Go to youtube app, play any video,\n click on Share option to play the same video \n with custom options like Change Pitch, Tempo, loop through the clip")
@@ -121,6 +124,21 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         player = ExoPlayer.Builder(this).build()
         viewBinding.playerView.player = player
 
+        if (localPlayback) {
+            Log.d("Video Player URI", "uri $videoUri")
+            videoUri?.let {
+                player?.prepare()
+                player?.playWhenReady = playWhenReady
+                player?.addMediaItem(MediaItem.fromUri(it))
+                player?.seekTo(currentItem, playbackPosition)
+                player?.addListener(this@PlayerActivity)
+            }
+        } else {
+            prepareYoutubePlayback()
+        }
+    }
+
+    private fun prepareYoutubePlayback() {
         object : YouTubeExtractor(this) {
             override fun onExtractionComplete(
                 ytFiles: SparseArray<YtFile>?,
@@ -161,8 +179,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                 }
             }
 
-        }.extract(youtubeLink)
-
+        }.extract(videoUri)
     }
 
     private fun updatePlaybackParameters(playbackParameters: PlaybackParameters) {
@@ -183,7 +200,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         if (playbackState == Player.STATE_READY) {
             viewBinding.progressBar.visibility = View.INVISIBLE
-        } else {
+        } else if (playbackState == Player.STATE_BUFFERING) {
             viewBinding.progressBar.visibility = View.VISIBLE
         }
     }

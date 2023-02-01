@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), Player.Listener {
 
     private fun onVideoClick(video: VideoItem) {
         val intent = Intent(this, PlayerActivity::class.java)
-        intent.putExtra("uri", video.uri)
+        intent.putExtra("uri", video.uri.toString())
         startActivity(intent)
     }
 }
