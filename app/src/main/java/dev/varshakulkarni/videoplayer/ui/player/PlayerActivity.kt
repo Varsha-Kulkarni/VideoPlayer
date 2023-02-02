@@ -1,4 +1,4 @@
-package dev.varshakulkarni.videoplayer.ui
+package dev.varshakulkarni.videoplayer.ui.player
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -53,14 +53,14 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
     private var videoUri: String? = null
 
     private var popupView: View? = null
+    private var pitchPosition = 60
+    private var tempoPosition = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
         setupMenu()
-
-        Log.d("", "1.activity initialized")
 
         intent.getStringExtra("youtube_link")?.let {
             videoUri = it
@@ -227,10 +227,13 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                         R.id.action_settings -> {
                             player?.pause()
                             showSettingsPopup(this@PlayerActivity.viewBinding.parentLayout)
-                            val precision = 10.0.pow(4.0)
+                            val precision = 10.0.pow(1.0)
                             val pitchValueText =
                                 popupView?.findViewById<TextView>(R.id.pitchValueText)
                             val pitchSeekbar = popupView?.findViewById<SeekBar>(R.id.pitchSeekbar)
+                            pitchValueText?.text =
+                                ((precision * ((pitchPosition - 60) * 0.1f)).toInt() / precision).toString()
+                            pitchSeekbar?.progress = pitchPosition
                             pitchSeekbar?.setOnSeekBarChangeListener(object :
                                 SeekBar.OnSeekBarChangeListener {
                                 override fun onProgressChanged(
@@ -239,6 +242,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                     b: Boolean
                                 ) {
                                     if (i > 0) {
+                                        pitchPosition = i
                                         val pitch: Float = i / 60f
                                         val currentPlaybackParameters = player?.playbackParameters
                                         val speed: Float = currentPlaybackParameters?.speed ?: 1f
@@ -260,6 +264,8 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                             val pitchResetButton =
                                 popupView?.findViewById<TextView>(R.id.pitchResetButton)
                             pitchResetButton?.setOnClickListener {
+                                pitchPosition = 60
+
                                 val pitch = 1f
                                 pitchSeekbar?.progress = 60
                                 pitchValueText?.text = 0f.toString()
@@ -278,6 +284,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                 if (currentProgress != null) {
                                     if (currentProgress > 1) {
                                         val newProgress = currentProgress.minus(1)
+                                        pitchPosition = newProgress
                                         pitchSeekbar.progress = newProgress
                                         val newPitch: Float = newProgress / 60f
                                         val value =
@@ -299,6 +306,8 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                 if (currentProgress != null) {
                                     if (currentProgress < 100) {
                                         val newProgress = currentProgress.plus(1)
+                                        pitchPosition = newProgress
+
                                         pitchSeekbar.progress = newProgress
                                         val value =
                                             (precision * (newProgress - 60) * 0.1f).toInt() / precision
@@ -311,15 +320,17 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                         updatePlaybackParameters(newPlaybackParameters)
                                     }
                                 }
-
                             }
 
                             val tempoSeekBar = popupView?.findViewById<SeekBar>(R.id.tempoSeekbar)
                             val tempoValueText =
                                 popupView?.findViewById<TextView>(R.id.tempoValueText)
                             tempoValueText?.text =
-                                String.format(resources.getString(R.string.tempo_value), 100)
-
+                                String.format(
+                                    resources.getString(R.string.tempo_value),
+                                    tempoPosition
+                                )
+                            tempoSeekBar?.progress = tempoPosition
                             tempoSeekBar?.setOnSeekBarChangeListener(object :
                                 SeekBar.OnSeekBarChangeListener {
                                 override fun onProgressChanged(
@@ -327,6 +338,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                     i: Int,
                                     b: Boolean
                                 ) {
+                                    tempoPosition = i
                                     val tempo: Float = i.toFloat() / 100
                                     tempoValueText?.text =
                                         String.format(resources.getString(R.string.tempo_value), i)
@@ -345,6 +357,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                             val tempoResetButton =
                                 popupView?.findViewById<TextView>(R.id.tempoResetButton)
                             tempoResetButton?.setOnClickListener {
+                                tempoPosition = 100
                                 val tempo = 1f
                                 tempoSeekBar?.progress = 100
                                 tempoValueText?.text =
@@ -359,8 +372,9 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                             tempoPlusButton?.setOnClickListener {
                                 val currentProgress = tempoSeekBar?.progress
                                 if (currentProgress != null) {
-                                    if (currentProgress < 100) {
+                                    if (currentProgress < 200) {
                                         val newProgress = currentProgress.plus(1)
+                                        tempoPosition = newProgress
                                         tempoSeekBar.progress = newProgress
                                         tempoValueText?.text = newProgress.toString()
 
@@ -378,6 +392,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                 if (currentProgress != null) {
                                     if (currentProgress > 1) {
                                         val newProgress = currentProgress.minus(1)
+                                        tempoPosition = newProgress
                                         tempoSeekBar.progress = newProgress
                                         tempoValueText?.text = newProgress.toString()
 

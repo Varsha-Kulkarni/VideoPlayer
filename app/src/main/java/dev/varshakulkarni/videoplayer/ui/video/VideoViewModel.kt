@@ -1,4 +1,4 @@
-package dev.varshakulkarni.videoplayer.ui
+package dev.varshakulkarni.videoplayer.ui.video
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

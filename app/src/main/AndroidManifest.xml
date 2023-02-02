@@ -30,8 +30,9 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ui.PlayerActivity"
+            android:name=".ui.player.PlayerActivity"
             android:exported="true"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
