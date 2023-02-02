@@ -7,6 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.Player
 import dagger.hilt.android.AndroidEntryPoint
 import dev.varshakulkarni.videoplayer.databinding.ActivityMainBinding
+import dev.varshakulkarni.videoplayer.ui.player.PlayerActivity
+import dev.varshakulkarni.videoplayer.ui.video.VideoItem
+import dev.varshakulkarni.videoplayer.ui.video.VideoViewModel
+import dev.varshakulkarni.videoplayer.ui.video.VideosListAdapter
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), Player.Listener {

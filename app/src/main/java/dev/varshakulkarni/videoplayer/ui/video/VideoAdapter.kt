@@ -1,4 +1,4 @@
-package dev.varshakulkarni.videoplayer.ui
+package dev.varshakulkarni.videoplayer.ui.video
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
