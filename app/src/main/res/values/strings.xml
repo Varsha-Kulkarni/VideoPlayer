@@ -19,4 +19,5 @@
     <string name="durationformatshort" translatable="false"><xliff:g id="format">%2$d:%3$02d</xliff:g></string>
     <string name="durationformatlong" translatable="false"><xliff:g id="format">%1$d:%2$02d:%3$02d</xliff:g></string>
     <string name="local_videos">Local Videos:</string>
+    <string name="loop">Loop</string>
 </resources>

@@ -33,6 +33,7 @@ import com.google.android.exoplayer2.source.MergingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
+import com.google.android.material.slider.RangeSlider
 import dev.varshakulkarni.videoplayer.R
 import dev.varshakulkarni.videoplayer.databinding.ActivityPlayerBinding
 import kotlin.math.pow
@@ -55,6 +56,9 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
     private var popupView: View? = null
     private var pitchPosition = 60
     private var tempoPosition = 100
+
+    private var videoDuration: Long? = null
+    var sliderValues: List<Float>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -199,6 +203,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
 
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         if (playbackState == Player.STATE_READY) {
+            videoDuration = player?.duration
             viewBinding.progressBar.visibility = View.INVISIBLE
         } else if (playbackState == Player.STATE_BUFFERING) {
             viewBinding.progressBar.visibility = View.VISIBLE
@@ -402,7 +407,27 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                     }
                                 }
                             }
+                            val timelineSlider = popupView?.findViewById<RangeSlider>(R.id.timeline)
+                            timelineSlider?.valueFrom = 0f
+                            timelineSlider?.valueTo =
+                                videoDuration?.toFloat()?.div(60f * 1000f) ?: 0f
+                            timelineSlider?.values = sliderValues ?: arrayListOf(
+                                0f,
+                                videoDuration?.toFloat()?.div(60f * 1000f) ?: 0f
+                            )
+                            timelineSlider?.minSeparation = 60000f
+                            timelineSlider?.addOnSliderTouchListener(object :
+                                RangeSlider.OnSliderTouchListener {
 
+                                override fun onStartTrackingTouch(slider: RangeSlider) {
+
+                                }
+
+                                override fun onStopTrackingTouch(slider: RangeSlider) {
+                                    sliderValues = slider.values
+                                    Log.d("", "slider values, $sliderValues ")
+                                }
+                            })
                         }
 
                     }

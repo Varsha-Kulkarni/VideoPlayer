@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="0dp"
     android:layout_height="match_parent"
-    app:layout_constraintWidth_percent="0.8"
-    android:background="@color/white">
+    android:background="@color/white"
+    app:layout_constraintWidth_percent="0.9">
 
 
     <androidx.cardview.widget.CardView
@@ -24,8 +24,8 @@
                 android:id="@+id/pitchTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:layout_marginVertical="8dp"
+                android:layout_marginStart="16dp"
                 android:text="@string/pitch"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -54,8 +54,8 @@
                 android:id="@+id/pitchMinusButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_marginStart="16dp"
                 android:layout_marginVertical="8dp"
+                android:layout_marginStart="16dp"
                 android:background="@drawable/minus"
                 android:padding="24dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -92,8 +92,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/pitchView">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -104,8 +104,8 @@
                 android:id="@+id/tempoTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:layout_marginVertical="8dp"
+                android:layout_marginStart="16dp"
                 android:text="@string/tempo"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -124,8 +124,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
-                android:text="@string/reset"
                 android:layout_marginEnd="16dp"
+                android:text="@string/reset"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -135,8 +135,8 @@
                 android:layout_height="24dp"
                 android:layout_marginVertical="8dp"
                 android:layout_marginStart="16dp"
-                android:padding="24dp"
                 android:background="@drawable/minus"
+                android:padding="24dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tempoTextView" />
 
@@ -158,11 +158,45 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginVertical="8dp"
-                android:padding="24dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/plus"
+                android:padding="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tempoResetButton" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tempoView">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvLooperLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:layout_marginStart="16dp"
+                android:text="@string/loop"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.slider.RangeSlider
+                android:id="@+id/timeline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:labelBehavior="withinBounds"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvLooperLabel" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
