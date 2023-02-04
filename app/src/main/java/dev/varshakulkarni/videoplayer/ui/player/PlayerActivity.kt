@@ -28,6 +28,7 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.source.ClippingMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.MergingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -52,6 +53,11 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
     private var localPlayback = false
 
     private var videoUri: String? = null
+
+//    private var localVideoSource: MediaSource? = null
+
+    private var videoSource: MediaSource? = null
+    private var audioSource: MediaSource? = null
 
     private var popupView: View? = null
     private var pitchPosition = 60
@@ -164,22 +170,32 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                             }
                         }
                     }
+                    player?.playWhenReady = playWhenReady
+
                     if (videoUrl == "")
                         videoUrl = ytFiles[iTag].url
                     val audioUrl = ytFiles[audioTag].url
-                    val audioSource: MediaSource = ProgressiveMediaSource
+                    audioSource = ProgressiveMediaSource
                         .Factory(DefaultHttpDataSource.Factory())
                         .createMediaSource(MediaItem.fromUri(audioUrl))
-                    val videoSource: MediaSource = ProgressiveMediaSource
+
+                    videoSource = ProgressiveMediaSource
                         .Factory(DefaultHttpDataSource.Factory())
                         .createMediaSource(MediaItem.fromUri(videoUrl))
-                    player?.setMediaSource(
-                        MergingMediaSource(true, videoSource, audioSource), true
-                    )
-                    player?.prepare()
-                    player?.playWhenReady = playWhenReady
-                    player?.seekTo(currentItem, playbackPosition)
-                    player?.addListener(this@PlayerActivity)
+
+                    if (audioSource != null && videoSource != null) {
+                        player?.setMediaSource(
+                            MergingMediaSource(
+                                true,
+                                audioSource as ProgressiveMediaSource,
+                                videoSource as ProgressiveMediaSource
+                            ), true
+                        )
+                        player?.prepare()
+                        player?.repeatMode = Player.REPEAT_MODE_ONE
+                        player?.seekTo(currentItem, playbackPosition)
+                        player?.addListener(this@PlayerActivity)
+                    }
                 }
             }
 
@@ -204,9 +220,43 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         if (playbackState == Player.STATE_READY) {
             videoDuration = player?.duration
+            Log.d("videoDuration", "$videoDuration")
             viewBinding.progressBar.visibility = View.INVISIBLE
         } else if (playbackState == Player.STATE_BUFFERING) {
             viewBinding.progressBar.visibility = View.VISIBLE
+        }
+    }
+
+    private fun loopClip() {
+        val millis = 60 * 1000 * 1000
+        val startMS: Long = sliderValues?.get(0)?.times(millis)?.toLong() ?: 0L
+        val endMS = sliderValues?.get(1)?.times(millis)?.toLong() ?: videoDuration ?: 0L
+//        val startMS = videoDuration?.div(4)?.times(1000) ?: 0L
+//        val endMS = videoDuration?.div(2)?.times(1000) ?: 0L
+        Log.d("loopclip", "Start = $startMS end=$endMS")
+        if (localPlayback) {
+            videoUri?.let {
+                val localVideoSource = ClippingMediaSource(
+                    ProgressiveMediaSource
+                        .Factory(DefaultHttpDataSource.Factory())
+                        .createMediaSource(MediaItem.fromUri(it)), startMS, endMS
+                )
+                player?.setMediaSource(localVideoSource)
+                player?.playWhenReady
+                player?.prepare()
+            }
+        } else {
+            val clippingAudioSource = audioSource?.let { ClippingMediaSource(it, startMS, endMS) }
+            val clippingVideoSource = videoSource?.let { ClippingMediaSource(it, startMS, endMS) }
+
+            if (clippingVideoSource != null && clippingAudioSource != null) {
+
+                player?.setMediaSource(
+                    MergingMediaSource(true, clippingVideoSource, clippingAudioSource), true
+                )
+                player?.prepare()
+                player?.playWhenReady
+            }
         }
     }
 
@@ -215,12 +265,6 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
 
         menuHost.addMenuProvider(
             object : MenuProvider {
-
-                override fun onPrepareMenu(menu: Menu) {
-
-                    super.onPrepareMenu(menu)
-
-                }
 
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menuInflater.inflate(R.menu.main_menu, menu)
@@ -426,6 +470,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                 override fun onStopTrackingTouch(slider: RangeSlider) {
                                     sliderValues = slider.values
                                     Log.d("", "slider values, $sliderValues ")
+                                    loopClip()
                                 }
                             })
                         }
