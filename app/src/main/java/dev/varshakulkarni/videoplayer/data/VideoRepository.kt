@@ -30,7 +30,7 @@ class VideoRepository @Inject constructor(
         val uri: Uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
 
         // Display videos in alphabetical order based on their display name.
-        val sortOrder = "${MediaStore.Video.Media.DISPLAY_NAME} ASC"
+        val sortOrder = "${MediaStore.Video.Media.DATE_TAKEN} DESC"
         val cursor: Cursor? = contentResolver.query(uri, null, null, null, sortOrder)
 
         //looping through all rows and adding to list
