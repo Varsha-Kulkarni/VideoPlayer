@@ -32,6 +32,7 @@ import com.google.android.exoplayer2.source.ClippingMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.MergingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
 import com.google.android.material.slider.RangeSlider
@@ -178,24 +179,28 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                     audioSource = ProgressiveMediaSource
                         .Factory(DefaultHttpDataSource.Factory())
                         .createMediaSource(MediaItem.fromUri(audioUrl))
+//
+//                    val startMS = 100L
+//                    val endMS = 80000L
+//                    val clippingAudioMediaSource = ClippingMediaSource(audioSource as ProgressiveMediaSource, startMS * 1000, endMS * 1000)
 
                     videoSource = ProgressiveMediaSource
                         .Factory(DefaultHttpDataSource.Factory())
                         .createMediaSource(MediaItem.fromUri(videoUrl))
 
-                    if (audioSource != null && videoSource != null) {
-                        player?.setMediaSource(
-                            MergingMediaSource(
-                                true,
-                                audioSource as ProgressiveMediaSource,
-                                videoSource as ProgressiveMediaSource
-                            ), true
-                        )
-                        player?.prepare()
-                        player?.repeatMode = Player.REPEAT_MODE_ONE
-                        player?.seekTo(currentItem, playbackPosition)
-                        player?.addListener(this@PlayerActivity)
-                    }
+//                    val clippingMediaSource = ClippingMediaSource(videoSource as ProgressiveMediaSource, startMS * 1000, endMS * 1000)
+
+                    player?.setMediaSource(
+                        MergingMediaSource(
+                            true, audioSource as ProgressiveMediaSource,
+                            videoSource as ProgressiveMediaSource
+                        ), true
+                    )
+                    player?.prepare()
+                    player?.repeatMode = Player.REPEAT_MODE_ONE
+
+                    player?.seekTo(currentItem, playbackPosition)
+                    player?.addListener(this@PlayerActivity)
                 }
             }
 
@@ -228,22 +233,22 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
     }
 
     private fun loopClip() {
-        val millis = 60 * 1000 * 1000
+        val millis = 1000
         val startMS: Long = sliderValues?.get(0)?.times(millis)?.toLong() ?: 0L
         val endMS = sliderValues?.get(1)?.times(millis)?.toLong() ?: videoDuration ?: 0L
-//        val startMS = videoDuration?.div(4)?.times(1000) ?: 0L
-//        val endMS = videoDuration?.div(2)?.times(1000) ?: 0L
+
         Log.d("loopclip", "Start = $startMS end=$endMS")
         if (localPlayback) {
             videoUri?.let {
                 val localVideoSource = ClippingMediaSource(
                     ProgressiveMediaSource
-                        .Factory(DefaultHttpDataSource.Factory())
+                        .Factory(DefaultDataSource.Factory(this))
                         .createMediaSource(MediaItem.fromUri(it)), startMS, endMS
                 )
                 player?.setMediaSource(localVideoSource)
-                player?.playWhenReady
                 player?.prepare()
+                player?.playWhenReady
+
             }
         } else {
             val clippingAudioSource = audioSource?.let { ClippingMediaSource(it, startMS, endMS) }
@@ -454,12 +459,12 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                             val timelineSlider = popupView?.findViewById<RangeSlider>(R.id.timeline)
                             timelineSlider?.valueFrom = 0f
                             timelineSlider?.valueTo =
-                                videoDuration?.toFloat()?.div(60f * 1000f) ?: 0f
+                                videoDuration?.toFloat() ?: 1f
                             timelineSlider?.values = sliderValues ?: arrayListOf(
                                 0f,
-                                videoDuration?.toFloat()?.div(60f * 1000f) ?: 0f
+                                videoDuration?.toFloat() ?: 1f
                             )
-                            timelineSlider?.minSeparation = 60000f
+//                            timelineSlider?.minSeparation = 60000f
                             timelineSlider?.addOnSliderTouchListener(object :
                                 RangeSlider.OnSliderTouchListener {
 
