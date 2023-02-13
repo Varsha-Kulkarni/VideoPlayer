@@ -15,6 +15,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.PopupWindow
+import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -55,16 +56,17 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
 
     private var videoUri: String? = null
 
-//    private var localVideoSource: MediaSource? = null
-
     private var videoSource: MediaSource? = null
     private var audioSource: MediaSource? = null
 
     private var popupView: View? = null
+    private var popviewProgress: ProgressBar? = null
     private var pitchPosition = 60
     private var tempoPosition = 100
 
     private var videoDuration: Long? = null
+    private var isDurationSet = false
+
     var sliderValues: List<Float>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -224,11 +226,16 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
 
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         if (playbackState == Player.STATE_READY) {
-            videoDuration = player?.duration
+            if (!isDurationSet) {
+                videoDuration = player?.duration
+                isDurationSet = true
+            }
             Log.d("videoDuration", "$videoDuration")
             viewBinding.progressBar.visibility = View.INVISIBLE
+            popviewProgress?.visibility = View.INVISIBLE
         } else if (playbackState == Player.STATE_BUFFERING) {
             viewBinding.progressBar.visibility = View.VISIBLE
+            popviewProgress?.visibility = View.VISIBLE
         }
     }
 
@@ -457,6 +464,8 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                 }
                             }
                             val timelineSlider = popupView?.findViewById<RangeSlider>(R.id.timeline)
+                            popviewProgress = popupView?.findViewById(R.id.popviewProgressBar)
+
                             timelineSlider?.valueFrom = 0f
                             timelineSlider?.valueTo =
                                 videoDuration?.toFloat() ?: 1f
@@ -464,7 +473,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                 0f,
                                 videoDuration?.toFloat() ?: 1f
                             )
-//                            timelineSlider?.minSeparation = 60000f
+                            timelineSlider?.minSeparation = 1f
                             timelineSlider?.addOnSliderTouchListener(object :
                                 RangeSlider.OnSliderTouchListener {
 
