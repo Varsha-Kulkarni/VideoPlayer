@@ -13,6 +13,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.CheckBox
+import android.widget.CompoundButton
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.ProgressBar
@@ -181,16 +183,10 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                     audioSource = ProgressiveMediaSource
                         .Factory(DefaultHttpDataSource.Factory())
                         .createMediaSource(MediaItem.fromUri(audioUrl))
-//
-//                    val startMS = 100L
-//                    val endMS = 80000L
-//                    val clippingAudioMediaSource = ClippingMediaSource(audioSource as ProgressiveMediaSource, startMS * 1000, endMS * 1000)
 
                     videoSource = ProgressiveMediaSource
                         .Factory(DefaultHttpDataSource.Factory())
                         .createMediaSource(MediaItem.fromUri(videoUrl))
-
-//                    val clippingMediaSource = ClippingMediaSource(videoSource as ProgressiveMediaSource, startMS * 1000, endMS * 1000)
 
                     player?.setMediaSource(
                         MergingMediaSource(
@@ -199,8 +195,6 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                         ), true
                     )
                     player?.prepare()
-                    player?.repeatMode = Player.REPEAT_MODE_ONE
-
                     player?.seekTo(currentItem, playbackPosition)
                     player?.addListener(this@PlayerActivity)
                 }
@@ -253,9 +247,6 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                         .createMediaSource(MediaItem.fromUri(it)), startMS, endMS
                 )
                 player?.setMediaSource(localVideoSource)
-                player?.prepare()
-                player?.playWhenReady
-
             }
         } else {
             val clippingAudioSource = audioSource?.let { ClippingMediaSource(it, startMS, endMS) }
@@ -266,10 +257,10 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                 player?.setMediaSource(
                     MergingMediaSource(true, clippingVideoSource, clippingAudioSource), true
                 )
-                player?.prepare()
-                player?.playWhenReady
             }
         }
+        player?.prepare()
+        player?.playWhenReady
     }
 
     private fun setupMenu() {
@@ -487,6 +478,16 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                     loopClip()
                                 }
                             })
+
+
+                            val isRepeatOn = popupView?.findViewById<CheckBox>(R.id.cbRepeat)
+                            isRepeatOn?.isChecked = player?.repeatMode != Player.REPEAT_MODE_OFF
+                            isRepeatOn?.setOnCheckedChangeListener { compoundButton: CompoundButton, isChecked: Boolean ->
+                                if (isChecked)
+                                    player?.repeatMode = Player.REPEAT_MODE_ONE
+                                else
+                                    player?.repeatMode = Player.REPEAT_MODE_OFF
+                            }
                         }
 
                     }
