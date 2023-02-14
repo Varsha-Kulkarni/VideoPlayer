@@ -197,6 +197,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <CheckBox
+                android:id="@+id/cbRepeat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvLooperLabel"
+                app:layout_constraintStart_toEndOf="@id/tvLooperLabel"
+                app:layout_constraintTop_toTopOf="@+id/tvLooperLabel" />
+
             <com.google.android.material.slider.RangeSlider
                 android:id="@+id/timeline"
                 android:layout_width="match_parent"
