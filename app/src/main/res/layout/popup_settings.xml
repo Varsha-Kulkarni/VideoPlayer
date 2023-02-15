@@ -24,6 +24,7 @@
                 android:id="@+id/popviewProgressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -49,13 +50,13 @@
                 app:layout_constraintStart_toEndOf="@+id/pitchTextView"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
+            <Button
                 android:id="@+id/pitchResetButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_marginVertical="8dp"
                 android:layout_marginEnd="16dp"
-                android:text="@string/reset"
+                android:background="@drawable/ic_refresh_24"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -78,21 +79,24 @@
                 android:max="120"
                 android:min="1"
                 android:progress="60"
+                app:layout_constraintBottom_toBottomOf="@+id/pitchMinusButton"
                 app:layout_constraintEnd_toStartOf="@id/pitchPlusButton"
                 app:layout_constraintStart_toEndOf="@id/pitchMinusButton"
-                app:layout_constraintTop_toBottomOf="@+id/pitchValueText"
+                app:layout_constraintTop_toTopOf="@+id/pitchMinusButton"
                 app:layout_constraintWidth_percent="0.8" />
 
             <Button
                 android:id="@+id/pitchPlusButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_marginVertical="8dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/plus"
                 android:padding="24dp"
+                app:layout_constraintBottom_toBottomOf="@+id/pitchSeekbar"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/pitchResetButton" />
+                app:layout_constraintTop_toBottomOf="@+id/pitchResetButton" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
@@ -116,8 +120,9 @@
                 android:layout_marginVertical="8dp"
                 android:layout_marginStart="16dp"
                 android:text="@string/tempo"
+                app:layout_constraintBottom_toBottomOf="@+id/tempoValueText"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@+id/tempoValueText" />
 
             <TextView
                 android:id="@+id/tempoValueText"
@@ -128,24 +133,25 @@
                 app:layout_constraintStart_toEndOf="@+id/tempoTextView"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
+            <Button
                 android:id="@+id/tempoResetButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_marginVertical="8dp"
                 android:layout_marginEnd="16dp"
-                android:text="@string/reset"
+                android:background="@drawable/ic_refresh_24"
+                android:padding="24dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tempoTextView"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@+id/tempoTextView" />
 
             <Button
                 android:id="@+id/tempoMinusButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_marginVertical="8dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/minus"
-                android:padding="24dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tempoTextView" />
 
@@ -157,21 +163,22 @@
                 android:max="200"
                 android:min="1"
                 android:progress="100"
+                app:layout_constraintBottom_toBottomOf="@+id/tempoMinusButton"
                 app:layout_constraintEnd_toStartOf="@id/tempoPlusButton"
                 app:layout_constraintStart_toEndOf="@id/tempoMinusButton"
-                app:layout_constraintTop_toBottomOf="@+id/tempoValueText"
+                app:layout_constraintTop_toTopOf="@+id/tempoMinusButton"
                 app:layout_constraintWidth_percent="0.8" />
 
             <Button
                 android:id="@+id/tempoPlusButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_marginVertical="8dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/plus"
-                android:padding="24dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tempoSeekbar"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tempoResetButton" />
+                app:layout_constraintTop_toBottomOf="@+id/tempoResetButton" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
@@ -181,6 +188,7 @@
         android:layout_margin="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tempoView">
 
         <androidx.constraintlayout.widget.ConstraintLayout

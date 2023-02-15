@@ -314,7 +314,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                 }
                             })
                             val pitchResetButton =
-                                popupView?.findViewById<TextView>(R.id.pitchResetButton)
+                                popupView?.findViewById<Button>(R.id.pitchResetButton)
                             pitchResetButton?.setOnClickListener {
                                 pitchPosition = 60
 
@@ -407,7 +407,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                             })
 
                             val tempoResetButton =
-                                popupView?.findViewById<TextView>(R.id.tempoResetButton)
+                                popupView?.findViewById<Button>(R.id.tempoResetButton)
                             tempoResetButton?.setOnClickListener {
                                 tempoPosition = 100
                                 val tempo = 1f
