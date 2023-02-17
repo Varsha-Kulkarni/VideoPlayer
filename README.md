@@ -1,6 +1,10 @@
 # VideoPlayer
 
-- Play Youtube videos with more Player controls and capabilities like change Pitch or loop start and end of a Video.
+## Features 
 
-- Either use Share option on Youtube App or copy Video URL and paste it in the this app to play video.
+- Play Youtube videos with more Player controls and capabilities like change Pitch, Tempo or loop clip of a Video.
+
+- Either use Share option on Youtube App or copy Video URL and paste it in the app to play videos directly from YouTube.
+
+- List/Play Local videos 
 
