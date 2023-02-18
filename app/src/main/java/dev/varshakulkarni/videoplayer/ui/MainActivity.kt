@@ -5,7 +5,12 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.Player
+import com.skydoves.balloon.ArrowPositionRules
+import com.skydoves.balloon.Balloon
+import com.skydoves.balloon.BalloonAnimation
+import com.skydoves.balloon.BalloonSizeSpec
 import dagger.hilt.android.AndroidEntryPoint
+import dev.varshakulkarni.videoplayer.R
 import dev.varshakulkarni.videoplayer.databinding.ActivityMainBinding
 import dev.varshakulkarni.videoplayer.ui.player.PlayerActivity
 import dev.varshakulkarni.videoplayer.ui.video.VideoItem
@@ -37,6 +42,23 @@ class MainActivity : AppCompatActivity(), Player.Listener {
             val intent = Intent(this, PlayerActivity::class.java)
             intent.putExtra("youtube_link", viewBinding.etVideoLink.text.toString())
             startActivity(intent)
+        }
+
+        viewBinding.btnHelp.setOnClickListener {
+            val balloon = Balloon.Builder(this)
+                .setWidthRatio(1.0f)
+                .setHeight(BalloonSizeSpec.WRAP)
+                .setText(resources.getString(R.string.url_help))
+                .setTextSize(15f)
+                .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+                .setArrowSize(10)
+                .setArrowPosition(0.5f)
+                .setPadding(12)
+                .setCornerRadius(8f)
+                .setBalloonAnimation(BalloonAnimation.FADE)
+                .setLifecycleOwner(this)
+                .build()
+            balloon.showAtCenter(it, 0, 30)
         }
     }
 
