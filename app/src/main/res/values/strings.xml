@@ -20,4 +20,5 @@
     <string name="durationformatlong" translatable="false"><xliff:g id="format">%1$d:%2$02d:%3$02d</xliff:g></string>
     <string name="local_videos">Local Videos:</string>
     <string name="loop">Loop</string>
+    <string name="url_help">Copy paste Youtube Url or click on share video on Youtube app and Open with this Video Player!</string>
 </resources>
