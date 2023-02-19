@@ -16,6 +16,7 @@ import dev.varshakulkarni.videoplayer.ui.player.PlayerActivity
 import dev.varshakulkarni.videoplayer.ui.video.VideoItem
 import dev.varshakulkarni.videoplayer.ui.video.VideoViewModel
 import dev.varshakulkarni.videoplayer.ui.video.VideosListAdapter
+import dev.varshakulkarni.videoplayer.utils.Utils
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), Player.Listener {
@@ -39,9 +40,14 @@ class MainActivity : AppCompatActivity(), Player.Listener {
             }
         }
         viewBinding.btnPlayVideo.setOnClickListener {
-            val intent = Intent(this, PlayerActivity::class.java)
-            intent.putExtra("youtube_link", viewBinding.etVideoLink.text.toString())
-            startActivity(intent)
+            val url = viewBinding.etVideoLink.text.toString()
+            if (Utils.isYoutubeUrl(url)) {
+                val intent = Intent(this, PlayerActivity::class.java)
+                intent.putExtra("youtube_link", url)
+                startActivity(intent)
+            } else {
+                viewBinding.etVideoLink.error = resources.getString(R.string.error_yt_url)
+            }
         }
 
         viewBinding.btnHelp.setOnClickListener {

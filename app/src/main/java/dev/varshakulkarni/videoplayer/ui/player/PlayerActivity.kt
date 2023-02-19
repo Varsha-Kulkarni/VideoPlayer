@@ -97,19 +97,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
 
     public override fun onStart() {
         super.onStart()
-
-        if (videoUri == null) {
-            AlertDialog.Builder(this)
-                .setTitle("Play Video")
-                .setMessage("Play any youtube video through ${this.resources.getString(R.string.app_name)}, Go to youtube app, play any video,\n click on Share option to play the same video \n with custom options like Change Pitch, Tempo, loop through the clip")
-                .setPositiveButton(
-                    "Ok"
-                ) { dialog, _ -> dialog.dismiss() }
-
-        } else {
             initializePlayer()
-        }
-
     }
 
     override fun onResume() {
@@ -510,5 +498,14 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
 
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
 
+    }
+
+    fun showYoutubePlaybackError() {
+        AlertDialog.Builder(this)
+            .setTitle("Playback Error")
+            .setMessage("Please check the Url entered is the valid one!")
+            .setPositiveButton(
+                "Ok"
+            ) { dialog, _ -> dialog.dismiss() }
     }
 }

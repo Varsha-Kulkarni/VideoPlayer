@@ -22,17 +22,19 @@
         app:layout_constraintStart_toStartOf="parent"
         android:inputType="text"
         app:layout_constraintTop_toBottomOf="@id/tvYoutubeLink"
+        android:hint="@string/url_hint"
+        android:textSize="12sp"
         app:layout_constraintWidth_percent="0.9" />
 
     <Button
         android:id="@+id/btnHelp"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/ic_info_24"
         android:padding="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="8dp"
         app:layout_constraintStart_toEndOf="@id/etVideoLink"
+        android:background="@drawable/ic_info_24"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/etVideoLink" />
 
     <Button
