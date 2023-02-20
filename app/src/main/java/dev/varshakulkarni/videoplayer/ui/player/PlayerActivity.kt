@@ -102,8 +102,6 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
 
     override fun onResume() {
         super.onResume()
-        Log.d("", "1.activity resumed")
-
         if (Util.SDK_INT <= 23 || player == null) {
             initializePlayer()
         }
