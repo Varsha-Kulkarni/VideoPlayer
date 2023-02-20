@@ -23,4 +23,5 @@
     <string name="url_help">Copy paste Youtube Url or click on share video on Youtube app and Open with this Video Player!</string>
     <string name="url_hint">https://www.youtube.com/watch?v=566IYGSXQcc</string>
     <string name="error_yt_url">Please enter valid Youtube Url!</string>
+    <string name="no_data">No Videos! \n Check and Allow Media permisions</string>
 </resources>
