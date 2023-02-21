@@ -32,8 +32,7 @@
         <activity
             android:name=".ui.player.PlayerActivity"
             android:exported="true"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTop">
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
