@@ -41,7 +41,10 @@ import com.google.android.exoplayer2.util.Util
 import com.google.android.material.slider.RangeSlider
 import dev.varshakulkarni.videoplayer.R
 import dev.varshakulkarni.videoplayer.databinding.ActivityPlayerBinding
+import dev.varshakulkarni.videoplayer.utils.Utils
+import java.util.*
 import kotlin.math.pow
+
 
 class PlayerActivity : AppCompatActivity(), Player.Listener {
 
@@ -441,6 +444,9 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                 }
                             }
                             val timelineSlider = popupView?.findViewById<RangeSlider>(R.id.timeline)
+                            timelineSlider?.setLabelFormatter { value ->
+                                Utils.formatToDigitalClock(value.toLong())
+                            }
                             popviewProgress = popupView?.findViewById(R.id.popviewProgressBar)
 
                             timelineSlider?.valueFrom = 0f
