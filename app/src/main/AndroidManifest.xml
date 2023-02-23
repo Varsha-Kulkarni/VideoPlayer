@@ -32,7 +32,9 @@
         <activity
             android:name=".ui.player.PlayerActivity"
             android:exported="true"
-            android:configChanges="keyboardHidden|orientation|screenSize">
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            android:resizeableActivity="true"
+            android:supportsPictureInPicture="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />

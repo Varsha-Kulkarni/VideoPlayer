@@ -2,8 +2,14 @@ package dev.varshakulkarni.videoplayer.ui.player
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.PictureInPictureParams
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import android.util.SparseArray
 import android.view.Gravity
@@ -31,6 +37,7 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.source.ClippingMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.MergingMediaSource
@@ -74,6 +81,10 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
 
     var sliderValues: List<Float>? = null
 
+    var isInPipMode: Boolean = false
+    var isPIPModeEnabled: Boolean = true
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
@@ -108,6 +119,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         if (Util.SDK_INT <= 23 || player == null) {
             initializePlayer()
         }
+        viewBinding.playerView.useController = true
     }
 
     override fun onPause() {
@@ -121,6 +133,9 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         super.onStop()
         if (Util.SDK_INT > 23) {
             releasePlayer()
+        }
+        if (packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+            finishAndRemoveTask()
         }
     }
 
@@ -140,6 +155,10 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         } else {
             prepareYoutubePlayback()
         }
+        val mediaSession = MediaSessionCompat(this, packageName)
+        val mediaSessionConnector = MediaSessionConnector(mediaSession)
+        mediaSessionConnector.setPlayer(player)
+        mediaSession.isActive = true
     }
 
     private fun prepareYoutubePlayback() {
@@ -511,5 +530,35 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
             .setPositiveButton(
                 "Ok"
             ) { dialog, _ -> dialog.dismiss() }
+    }
+
+    override fun onPictureInPictureModeChanged(
+        isInPictureInPictureMode: Boolean,
+        newConfig: Configuration
+    ) {
+        playbackPosition = player?.currentPosition ?: 0L
+        isInPipMode = !isInPictureInPictureMode
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+    }
+
+    //Called when the user touches the Home or Recents button to leave the app.
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        enterPIPMode()
+    }
+
+    private fun enterPIPMode() {
+        if (packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+            popupView?.visibility = View.GONE
+            playbackPosition = player?.currentPosition ?: 0L
+            viewBinding.playerView.useController = false
+            val params = PictureInPictureParams.Builder()
+            this.enterPictureInPictureMode(params.build())
+            Handler(Looper.getMainLooper()).postDelayed({ checkPIPPermission() }, 30)
+        }
+    }
+
+    private fun checkPIPPermission() {
+        isPIPModeEnabled = isInPictureInPictureMode
     }
 }
