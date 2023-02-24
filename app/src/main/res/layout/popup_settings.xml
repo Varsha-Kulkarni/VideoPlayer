@@ -3,228 +3,231 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="0dp"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    app:layout_constraintWidth_percent="0.9">
+    style="@style/PopViewStyle"
+    app:layout_constraintWidth_percent="0.8">
 
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/pitchView"
-        android:layout_width="match_parent"
+    <ProgressBar
+        android:id="@+id/popviewProgressBar"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ProgressBar
-                android:id="@+id/popviewProgressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/pitchTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="8dp"
-                android:layout_marginStart="16dp"
-                android:text="@string/pitch"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/pitchValueText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="8dp"
-                android:text="@string/pitch_value"
-                app:layout_constraintEnd_toStartOf="@+id/pitchResetButton"
-                app:layout_constraintStart_toEndOf="@+id/pitchTextView"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/pitchResetButton"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginVertical="8dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/ic_refresh_24"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/pitchMinusButton"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginVertical="8dp"
-                android:layout_marginStart="16dp"
-                android:background="@drawable/minus"
-                android:padding="24dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/pitchTextView" />
-
-            <SeekBar
-                android:id="@+id/pitchSeekbar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="8dp"
-                android:max="120"
-                android:min="1"
-                android:progress="60"
-                app:layout_constraintBottom_toBottomOf="@+id/pitchMinusButton"
-                app:layout_constraintEnd_toStartOf="@id/pitchPlusButton"
-                app:layout_constraintStart_toEndOf="@id/pitchMinusButton"
-                app:layout_constraintTop_toTopOf="@+id/pitchMinusButton"
-                app:layout_constraintWidth_percent="0.8" />
-
-            <Button
-                android:id="@+id/pitchPlusButton"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/plus"
-                android:padding="24dp"
-                app:layout_constraintBottom_toBottomOf="@+id/pitchSeekbar"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/pitchResetButton" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/tempoView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pitchView">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/tempoTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="8dp"
-                android:layout_marginStart="16dp"
-                android:text="@string/tempo"
-                app:layout_constraintBottom_toBottomOf="@+id/tempoValueText"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tempoValueText" />
-
-            <TextView
-                android:id="@+id/tempoValueText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="8dp"
-                app:layout_constraintEnd_toStartOf="@+id/tempoResetButton"
-                app:layout_constraintStart_toEndOf="@+id/tempoTextView"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/tempoResetButton"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginVertical="8dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/ic_refresh_24"
-                android:padding="24dp"
-                app:layout_constraintBottom_toBottomOf="@+id/tempoTextView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tempoTextView" />
-
-            <Button
-                android:id="@+id/tempoMinusButton"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/minus"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tempoTextView" />
-
-            <SeekBar
-                android:id="@+id/tempoSeekbar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="8dp"
-                android:max="200"
-                android:min="1"
-                android:progress="100"
-                app:layout_constraintBottom_toBottomOf="@+id/tempoMinusButton"
-                app:layout_constraintEnd_toStartOf="@id/tempoPlusButton"
-                app:layout_constraintStart_toEndOf="@id/tempoMinusButton"
-                app:layout_constraintTop_toTopOf="@+id/tempoMinusButton"
-                app:layout_constraintWidth_percent="0.8" />
-
-            <Button
-                android:id="@+id/tempoPlusButton"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/plus"
-                app:layout_constraintBottom_toBottomOf="@+id/tempoSeekbar"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tempoResetButton" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tempoView">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/tvHeading"
+        style="@style/SettingsTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="48dp"
+        android:text="@string/settings"
+        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvLooperLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="8dp"
-                android:layout_marginStart="16dp"
-                android:text="@string/loop"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/pitchTextView"
+        style="@style/SettingsTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:layout_marginStart="16dp"
+        android:text="@string/pitch"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvHeading" />
 
-            <CheckBox
-                android:id="@+id/cbRepeat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/tvLooperLabel"
-                app:layout_constraintStart_toEndOf="@id/tvLooperLabel"
-                app:layout_constraintTop_toTopOf="@+id/tvLooperLabel" />
+    <TextView
+        android:id="@+id/pitchValueText"
+        style="@style/SettingsTextStyle"
 
-            <com.google.android.material.slider.RangeSlider
-                android:id="@+id/timeline"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                app:labelBehavior="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvLooperLabel" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:text="@string/pitch_value"
+        app:layout_constraintEnd_toStartOf="@+id/pitchResetButton"
+        app:layout_constraintStart_toEndOf="@+id/pitchTextView"
+        app:layout_constraintTop_toBottomOf="@id/tvHeading" />
+
+    <Button
+        android:id="@+id/pitchResetButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginVertical="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/ic_refresh_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvHeading" />
+
+    <Button
+        android:id="@+id/pitchMinusButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginVertical="8dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/minus"
+        android:padding="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pitchTextView" />
+
+    <SeekBar
+        android:id="@+id/pitchSeekbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:max="120"
+        android:min="1"
+        android:progress="60"
+        app:layout_constraintBottom_toBottomOf="@+id/pitchMinusButton"
+        app:layout_constraintEnd_toStartOf="@id/pitchPlusButton"
+        app:layout_constraintStart_toEndOf="@id/pitchMinusButton"
+        app:layout_constraintTop_toTopOf="@+id/pitchMinusButton"
+        app:layout_constraintWidth_percent="0.8" />
+
+    <Button
+        android:id="@+id/pitchPlusButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/plus"
+        android:padding="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/pitchSeekbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pitchResetButton" />
+
+    <View
+        android:id="@+id/pitchSeparator"
+        android:layout_width="match_parent"
+        style="@style/SeparatorStyle"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pitchPlusButton" />
+
+    <TextView
+        android:id="@+id/tempoTextView"
+        style="@style/SettingsTextStyle"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:layout_marginStart="16dp"
+        android:text="@string/tempo"
+        app:layout_constraintBottom_toBottomOf="@+id/tempoValueText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pitchSeparator" />
+
+    <TextView
+        android:id="@+id/tempoValueText"
+        style="@style/SettingsTextStyle"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/tempoResetButton"
+        app:layout_constraintStart_toEndOf="@+id/tempoTextView"
+        app:layout_constraintTop_toBottomOf="@+id/pitchSeparator" />
+
+    <Button
+        android:id="@+id/tempoResetButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginVertical="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/ic_refresh_24"
+        android:padding="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tempoTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tempoTextView" />
+
+    <Button
+        android:id="@+id/tempoMinusButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/minus"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tempoTextView" />
+
+    <SeekBar
+        android:id="@+id/tempoSeekbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:max="200"
+        android:min="1"
+        android:progress="100"
+        app:layout_constraintBottom_toBottomOf="@+id/tempoMinusButton"
+        app:layout_constraintEnd_toStartOf="@id/tempoPlusButton"
+        app:layout_constraintStart_toEndOf="@id/tempoMinusButton"
+        app:layout_constraintTop_toTopOf="@+id/tempoMinusButton"
+        app:layout_constraintWidth_percent="0.8" />
+
+    <Button
+        android:id="@+id/tempoPlusButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/plus"
+        app:layout_constraintBottom_toBottomOf="@+id/tempoSeekbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tempoResetButton" />
+
+    <View
+        android:id="@+id/tempoSeparator"
+        android:layout_width="match_parent"
+        style="@style/SeparatorStyle"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tempoPlusButton" />
+
+    <TextView
+        android:id="@+id/tvLooperLabel"
+        style="@style/SettingsTextStyle"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:layout_marginStart="16dp"
+        android:text="@string/loop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tempoSeparator" />
+
+    <CheckBox
+        android:id="@+id/cbRepeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvLooperLabel"
+        app:layout_constraintStart_toEndOf="@id/tvLooperLabel"
+        app:layout_constraintTop_toTopOf="@+id/tvLooperLabel" />
+
+    <com.google.android.material.slider.RangeSlider
+        android:id="@+id/timeline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        app:labelBehavior="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvLooperLabel" />
+
+    <View
+        android:id="@+id/bottomSeparator"
+        style="@style/SeparatorStyle"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/timeline" />
 </androidx.constraintlayout.widget.ConstraintLayout>
