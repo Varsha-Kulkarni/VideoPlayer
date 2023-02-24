@@ -19,23 +19,22 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        android:inputType="text"
-        app:layout_constraintTop_toBottomOf="@id/tvYoutubeLink"
         android:hint="@string/url_hint"
+        android:inputType="text"
         android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvYoutubeLink"
         app:layout_constraintWidth_percent="0.9" />
 
     <Button
         android:id="@+id/btnHelp"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:padding="32dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintStart_toEndOf="@id/etVideoLink"
         android:background="@drawable/ic_info_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/etVideoLink" />
+        android:padding="32dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvYoutubeLink"
+        app:layout_constraintStart_toEndOf="@id/tvYoutubeLink"
+        app:layout_constraintTop_toTopOf="@+id/tvYoutubeLink" />
 
     <Button
         android:id="@+id/btnPlayVideo"

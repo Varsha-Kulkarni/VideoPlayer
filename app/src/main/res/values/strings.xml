@@ -1,5 +1,5 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name">VideoPlayer</string>
+    <string name="app_name">YLVPlayer</string>
     <string name="media_url_mp3">https://storage.googleapis.com/exoplayer-test-media-0/play.mp3</string>
     <string name="media_url_dash"><![CDATA[https://www.youtube.com/api/manifest/dash/id/bf5bb2419360daf1/source/youtube?as=fmp4_audio_clear,fmp4_sd_hd_clear&sparams=ip,ipbits,expire,source,id,as&ip=0.0.0.0&ipbits=0&expire=19000000000&signature=51AF5F39AB0CEC3E5497CD9C900EBFEAECCCB5C7.8506521BFC350652163895D4C26DEE124209AA9E&key=ik0]]>
     </string>
@@ -20,8 +20,9 @@
     <string name="durationformatlong" translatable="false"><xliff:g id="format">%1$d:%2$02d:%3$02d</xliff:g></string>
     <string name="local_videos">Local Videos:</string>
     <string name="loop">Loop</string>
-    <string name="url_help">Copy paste Youtube Url or click on share video on Youtube app and Open with this Video Player!</string>
+    <string name="url_help">Copy paste Youtube Url or click on share video on Youtube app and Open with YLPlayer!</string>
     <string name="url_hint">https://www.youtube.com/watch?v=566IYGSXQcc</string>
     <string name="error_yt_url">Please enter valid Youtube Url!</string>
     <string name="no_data">No Videos! \n Check and Allow Media permisions</string>
+    <string name="settings">Settings</string>
 </resources>

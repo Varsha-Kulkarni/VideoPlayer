@@ -6,6 +6,8 @@ import android.app.PictureInPictureParams
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,6 +20,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.CompoundButton
@@ -88,6 +91,12 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
+
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
+            WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION
+        )
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         setupMenu()
 
@@ -519,7 +528,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         val focus = true
         val popupWindow = PopupWindow(popupView, width, height, focus)
 
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+        popupWindow.showAtLocation(view, Gravity.RIGHT, 30, 30)
 
     }
 
