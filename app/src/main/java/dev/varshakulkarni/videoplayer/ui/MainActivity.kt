@@ -78,7 +78,11 @@ class MainActivity : AppCompatActivity(), Player.Listener {
         }
 
         viewBinding.btnRefresh.setOnClickListener {
-            initLocalVideos()
+            if (!permissionsGranted()) {
+                showPermissionDialog()
+            } else {
+                initLocalVideos()
+            }
         }
     }
 
@@ -118,26 +122,30 @@ class MainActivity : AppCompatActivity(), Player.Listener {
                 initLocalVideos()
             } else {
                 viewBinding.tvNoData.visibility = View.VISIBLE
-                AlertDialog.Builder(this)
-                    .setTitle("Local Playback permissions")
-                    .setMessage("${resources.getString(R.string.app_name)}  requires this permission for local videos playback, \n 1. Scroll to Permissions \n 2. Allow \" Files and Media permission\"")
-                    .setPositiveButton(
-                        "Ok"
-                    ) { dialog, which ->
-                        val intent = Intent(
-                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                            Uri.fromParts("package", packageName, null)
-                        )
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        intent.addCategory(Intent.CATEGORY_DEFAULT)
-                        startActivity(intent)
-                    }
-                    .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
-                    .show()
+                showPermissionDialog()
             }
         }
+    }
+
+    private fun showPermissionDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Local Playback permissions")
+            .setMessage("${resources.getString(R.string.app_name)}  requires this permission for local videos playback, \n 1. Scroll to Permissions \n 2. Allow \" Files and Media permission\"")
+            .setPositiveButton(
+                "Ok"
+            ) { dialog, which ->
+                val intent = Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.fromParts("package", packageName, null)
+                )
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                intent.addCategory(Intent.CATEGORY_DEFAULT)
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     companion object {

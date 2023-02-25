@@ -120,7 +120,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
 
     public override fun onStart() {
         super.onStart()
-            initializePlayer()
+        initializePlayer()
     }
 
     override fun onResume() {
@@ -528,7 +528,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         val focus = true
         val popupWindow = PopupWindow(popupView, width, height, focus)
 
-        popupWindow.showAtLocation(view, Gravity.RIGHT, 30, 30)
+        popupWindow.showAtLocation(view, Gravity.CENTER, 30, 30)
 
     }
 
