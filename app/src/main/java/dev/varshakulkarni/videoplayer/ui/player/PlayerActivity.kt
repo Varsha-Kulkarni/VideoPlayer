@@ -29,6 +29,7 @@ import android.widget.PopupWindow
 import android.widget.ProgressBar
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -49,18 +50,23 @@ import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
 import com.google.android.material.slider.RangeSlider
+import dagger.hilt.android.AndroidEntryPoint
 import dev.varshakulkarni.videoplayer.R
+import dev.varshakulkarni.videoplayer.data.db.entity.VideoEntity
 import dev.varshakulkarni.videoplayer.databinding.ActivityPlayerBinding
+import dev.varshakulkarni.videoplayer.ui.video.VideoViewModel
 import dev.varshakulkarni.videoplayer.utils.Utils
 import java.util.*
 import kotlin.math.pow
 
-
+@AndroidEntryPoint
 class PlayerActivity : AppCompatActivity(), Player.Listener {
 
     private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityPlayerBinding.inflate(layoutInflater)
     }
+
+    private val videoViewModel: VideoViewModel by viewModels()
 
     private var player: ExoPlayer? = null
 
@@ -87,6 +93,8 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
     var isInPipMode: Boolean = false
     var isPIPModeEnabled: Boolean = true
 
+    private var videoTitle: String? = null
+    private var videoEntity: VideoEntity? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,12 +110,18 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
 
         intent.getStringExtra("youtube_link")?.let {
             videoUri = it
+            videoViewModel.getVideo(it)
         }
 
         if (intent?.action == Intent.ACTION_SEND) {
             intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
                 videoUri = it
+                videoViewModel.getVideo(it)
             }
+        }
+
+        videoViewModel.ytVideo.observe(this) {
+            videoEntity = it
         }
 
         intent.getStringExtra("uri")?.let {
@@ -115,12 +129,11 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
             videoUri = it
             localPlayback = true
         }
-
     }
 
     public override fun onStart() {
         super.onStart()
-            initializePlayer()
+        initializePlayer()
     }
 
     override fun onResume() {
@@ -155,15 +168,13 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         if (localPlayback) {
             Log.d("Video Player URI", "uri $videoUri")
             videoUri?.let {
-                player?.prepare()
-                player?.playWhenReady = playWhenReady
                 player?.addMediaItem(MediaItem.fromUri(it))
-                player?.seekTo(currentItem, playbackPosition)
-                player?.addListener(this@PlayerActivity)
+                prepareVideoPlayback()
             }
         } else {
             prepareYoutubePlayback()
         }
+
         val mediaSession = MediaSessionCompat(this, packageName)
         val mediaSessionConnector = MediaSessionConnector(mediaSession)
         mediaSessionConnector.setPlayer(player)
@@ -192,7 +203,6 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                             }
                         }
                     }
-                    player?.playWhenReady = playWhenReady
 
                     if (videoUrl == "")
                         videoUrl = ytFiles[iTag].url
@@ -205,19 +215,37 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                         .Factory(DefaultHttpDataSource.Factory())
                         .createMediaSource(MediaItem.fromUri(videoUrl))
 
+                    videoTitle = videoMeta?.title
+                    saveVideoMeta()
                     player?.setMediaSource(
                         MergingMediaSource(
                             true, audioSource as ProgressiveMediaSource,
                             videoSource as ProgressiveMediaSource
                         ), true
                     )
-                    player?.prepare()
-                    player?.seekTo(currentItem, playbackPosition)
-                    player?.addListener(this@PlayerActivity)
+                    prepareVideoPlayback()
                 }
             }
 
         }.extract(videoUri)
+    }
+
+    private fun prepareVideoPlayback() {
+        player?.playWhenReady = playWhenReady
+        player?.prepare()
+        player?.seekTo(currentItem, playbackPosition)
+        player?.addListener(this@PlayerActivity)
+    }
+
+    private fun saveVideoMeta() {
+        videoUri?.let {
+            if (videoEntity == null)
+                videoEntity = VideoEntity(it, videoTitle, videoDuration)
+
+            videoEntity?.let { video ->
+                videoViewModel.saveVideoMeta(video)
+            }
+        }
     }
 
     private fun updatePlaybackParameters(playbackParameters: PlaybackParameters) {
