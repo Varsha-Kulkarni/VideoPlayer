@@ -7,7 +7,11 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.View
+import android.widget.AdapterView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -19,11 +23,13 @@ import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
 import dagger.hilt.android.AndroidEntryPoint
 import dev.varshakulkarni.videoplayer.R
+import dev.varshakulkarni.videoplayer.data.db.entity.VideoEntity
 import dev.varshakulkarni.videoplayer.databinding.ActivityMainBinding
 import dev.varshakulkarni.videoplayer.ui.player.PlayerActivity
+import dev.varshakulkarni.videoplayer.ui.video.SearchAdapter
 import dev.varshakulkarni.videoplayer.ui.video.VideoItem
-import dev.varshakulkarni.videoplayer.ui.video.VideoViewModel
 import dev.varshakulkarni.videoplayer.ui.video.VideosListAdapter
+import dev.varshakulkarni.videoplayer.ui.video.VideosViewModel
 import dev.varshakulkarni.videoplayer.utils.Utils
 
 @AndroidEntryPoint
@@ -33,7 +39,11 @@ class MainActivity : AppCompatActivity(), Player.Listener {
         ActivityMainBinding.inflate(layoutInflater)
     }
 
-    private val videoViewModel: VideoViewModel by viewModels()
+    private val videoViewModel: VideosViewModel by viewModels()
+    private lateinit var searchAdapter: SearchAdapter
+
+    private val ytVideos = ArrayList<VideoEntity>()
+    private var ytVideo: VideoEntity? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,14 +59,57 @@ class MainActivity : AppCompatActivity(), Player.Listener {
             )
         }
 
+        searchAdapter = SearchAdapter(
+            this@MainActivity,
+            R.layout.item_video_title, ytVideos
+        )
+
+        viewBinding.lvHistory.adapter = searchAdapter
+        viewBinding.lvHistory.setOnItemClickListener { adapterView: AdapterView<*>, view2: View, i: Int, l: Long ->
+            ytVideo = adapterView.getItemAtPosition(i) as VideoEntity
+            viewBinding.etVideoLink.text =
+                Editable.Factory.getInstance().newEditable(ytVideo?.title)
+        }
+
+        viewBinding.etVideoLink.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                videoViewModel.searchVideo(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) = Unit
+        })
+
+        videoViewModel.ytVideos.observe(this) {
+            ytVideos.clear()
+            ytVideos.addAll(it)
+            searchAdapter.notifyDataSetChanged()
+            Log.i("VarshaSearch", "")
+        }
+
         viewBinding.btnPlayVideo.setOnClickListener {
             val url = viewBinding.etVideoLink.text.toString()
-            if (Utils.isYoutubeUrl(url)) {
-                val intent = Intent(this, PlayerActivity::class.java)
-                intent.putExtra("youtube_link", url)
-                startActivity(intent)
-            } else {
+            var data: String? = null
+
+            if (Utils.isYoutubeUrl(url))
+                data = url
+            else if (ytVideo != null)
+                data = ytVideo?.url
+
+            if (data == null) {
                 viewBinding.etVideoLink.error = resources.getString(R.string.error_yt_url)
+            } else {
+                val intent = Intent(this, PlayerActivity::class.java)
+                intent.putExtra("youtube_link", data)
+                startActivity(intent)
             }
         }
 

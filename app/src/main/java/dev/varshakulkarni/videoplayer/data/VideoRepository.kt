@@ -8,6 +8,8 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
+import dev.varshakulkarni.videoplayer.data.db.dao.VideosDao
+import dev.varshakulkarni.videoplayer.data.db.entity.VideoEntity
 import dev.varshakulkarni.videoplayer.ui.video.VideoItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,10 +17,14 @@ import javax.inject.Inject
 
 interface VideoDataSource {
     suspend fun getVideos(): List<VideoItem>
+    suspend fun searchVideo(searchQuery: String): List<VideoEntity>
+    suspend fun saveVideoMeta(videoEntity: VideoEntity)
+    suspend fun getVideoByUrl(url: String): VideoEntity?
 }
 
 class VideoRepository @Inject constructor(
     private val contentResolver: ContentResolver,
+    private val videosDao: VideosDao
 ) : VideoDataSource {
 
     @SuppressLint("Range")
@@ -56,4 +62,12 @@ class VideoRepository @Inject constructor(
         cursor?.close()
         return@withContext videos
     }
+
+    override suspend fun searchVideo(searchQuery: String): List<VideoEntity> =
+        videosDao.searchUrl(searchQuery)
+
+    override suspend fun saveVideoMeta(videoEntity: VideoEntity) =
+        videosDao.saveMediaMeta(videoEntity)
+
+    override suspend fun getVideoByUrl(url: String): VideoEntity? = videosDao.getVideoByUrl(url)
 }
