@@ -91,7 +91,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvLocalLabel"
         app:layout_constraintVertical_bias="0.0"
-        app:spanCount="4" />
+        app:spanCount="@integer/spanCount" />
 
     <ListView
         android:id="@+id/lvHistory"
