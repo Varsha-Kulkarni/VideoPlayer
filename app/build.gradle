@@ -23,7 +23,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -86,4 +87,13 @@ dependencies {
 
     //Balloon - Tool tip
     implementation "com.github.skydoves:balloon:1.5.2"
+
+    def roomVersion = "2.4.3"
+    def legacySupportVersion = "1.0.0"
+
+    // Room
+    api "androidx.room:room-runtime:$roomVersion"
+    api "androidx.legacy:legacy-support-v4:$legacySupportVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    api "androidx.room:room-ktx:$roomVersion"
 }

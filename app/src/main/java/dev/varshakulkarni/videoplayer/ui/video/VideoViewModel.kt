@@ -6,20 +6,31 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.varshakulkarni.videoplayer.data.VideoDataSource
+import dev.varshakulkarni.videoplayer.data.db.entity.VideoEntity
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class VideoViewModel @Inject constructor(private val datasource: VideoDataSource) : ViewModel() {
 
-    private val _videos = MutableLiveData<List<VideoItem>>()
-    val videos: LiveData<List<VideoItem>>
-        get() = _videos
+    private val _ytVideo = MutableLiveData<VideoEntity>()
+    val ytVideo: LiveData<VideoEntity>
+        get() = _ytVideo
 
-    init {
-        viewModelScope.launch {
+    private var job: Job? = null
 
-            _videos.postValue(datasource.getVideos())
+    fun saveVideoMeta(videoEntity: VideoEntity) {
+        job?.cancel()
+        job = viewModelScope.launch {
+            datasource.saveVideoMeta(videoEntity)
+        }
+    }
+
+    fun getVideo(url: String) {
+        job?.cancel()
+        job = viewModelScope.launch {
+            _ytVideo.postValue(datasource.getVideoByUrl(url))
         }
     }
 }
