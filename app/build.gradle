@@ -96,4 +96,8 @@ dependencies {
     api "androidx.legacy:legacy-support-v4:$legacySupportVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
     api "androidx.room:room-ktx:$roomVersion"
+
+    //DataStore
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+
 }
