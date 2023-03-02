@@ -243,7 +243,11 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                 videoEntity = VideoEntity(it, videoTitle, videoDuration)
 
             videoEntity?.let { video ->
+                var count = video.searchCount
+                count++
+                video.searchCount = count
                 videoViewModel.saveVideoMeta(video)
+                videoViewModel.deleteLeastRecentVideos()
             }
         }
     }

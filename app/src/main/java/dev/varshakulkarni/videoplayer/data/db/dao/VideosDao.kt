@@ -21,4 +21,6 @@ interface VideosDao {
     @Query("SELECT * FROM videos WHERE url=:url")
     suspend fun getVideoByUrl(url: String): VideoEntity?
 
+    @Query("DELETE FROM videos WHERE searchCount=1")
+    suspend fun deleteLeastRecentlyUsed()
 }

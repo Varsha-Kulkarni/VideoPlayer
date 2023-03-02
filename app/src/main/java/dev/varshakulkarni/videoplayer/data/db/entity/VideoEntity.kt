@@ -8,7 +8,8 @@ import androidx.room.PrimaryKey
 data class VideoEntity(
     val url: String,
     val title: String?,
-    val duration: Long?
+    val duration: Long?,
+    var searchCount: Int = 0
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0

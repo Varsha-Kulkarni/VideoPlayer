@@ -20,6 +20,7 @@ interface VideoDataSource {
     suspend fun searchVideo(searchQuery: String): List<VideoEntity>
     suspend fun saveVideoMeta(videoEntity: VideoEntity)
     suspend fun getVideoByUrl(url: String): VideoEntity?
+    suspend fun deleteLeastRecentVideos()
 }
 
 class VideoRepository @Inject constructor(
@@ -70,4 +71,6 @@ class VideoRepository @Inject constructor(
         videosDao.saveMediaMeta(videoEntity)
 
     override suspend fun getVideoByUrl(url: String): VideoEntity? = videosDao.getVideoByUrl(url)
+    override suspend fun deleteLeastRecentVideos() = videosDao.deleteLeastRecentlyUsed()
+
 }
