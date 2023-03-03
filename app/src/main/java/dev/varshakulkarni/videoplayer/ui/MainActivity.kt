@@ -39,8 +39,9 @@ class MainActivity : AppCompatActivity(), Player.Listener {
         ActivityMainBinding.inflate(layoutInflater)
     }
 
-    private val videoViewModel: VideosViewModel by viewModels()
+    private val videosViewModel: VideosViewModel by viewModels()
     private lateinit var searchAdapter: SearchAdapter
+    private lateinit var videoAdapter: VideosListAdapter
 
     private val ytVideos = ArrayList<VideoEntity>()
     private var ytVideo: VideoEntity? = null
@@ -48,16 +49,6 @@ class MainActivity : AppCompatActivity(), Player.Listener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
-
-        // Request local media permissions
-        if (permissionsGranted()) {
-            initLocalVideos()
-        } else {
-            viewBinding.tvNoData.visibility = View.VISIBLE
-            ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS.toTypedArray(), REQUEST_CODE_PERMISSIONS
-            )
-        }
 
         searchAdapter = SearchAdapter(
             this@MainActivity,
@@ -73,7 +64,7 @@ class MainActivity : AppCompatActivity(), Player.Listener {
 
         viewBinding.etVideoLink.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                videoViewModel.searchVideo(s.toString())
+                videosViewModel.searchVideo(s.toString())
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -88,7 +79,7 @@ class MainActivity : AppCompatActivity(), Player.Listener {
             ) = Unit
         })
 
-        videoViewModel.ytVideos.observe(this) {
+        videosViewModel.ytVideos.observe(this) {
             ytVideos.clear()
             ytVideos.addAll(it)
             searchAdapter.notifyDataSetChanged()
@@ -134,24 +125,34 @@ class MainActivity : AppCompatActivity(), Player.Listener {
             if (!permissionsGranted()) {
                 showPermissionDialog()
             } else {
-                initLocalVideos()
+                videosViewModel.loadVideos()
             }
         }
-    }
 
-    private fun initLocalVideos() {
-        val videoAdapter = VideosListAdapter { video -> onVideoClick(video) }
+        videoAdapter = VideosListAdapter { video -> onVideoClick(video) }
         viewBinding.rvVideos.adapter = videoAdapter
 
-        videoViewModel.videos.observe(this) {
-            it?.let {
-                viewBinding.apply {
-                    tvNoData.visibility = View.GONE
-                    btnRefresh.visibility = View.GONE
-                }
-                videoAdapter.submitList(it as MutableList<VideoItem>)
+        // Request local media permissions
+        if (permissionsGranted()) {
+            videosViewModel.loadVideos()
+        } else {
+            viewBinding.apply {
+                tvNoData.visibility = View.VISIBLE
+                btnRefresh.visibility = View.VISIBLE
+            }
+            ActivityCompat.requestPermissions(
+                this, REQUIRED_PERMISSIONS.toTypedArray(), REQUEST_CODE_PERMISSIONS
+            )
+        }
+
+        videosViewModel.videos.observe(this) { data ->
+            viewBinding.run {
+                tvNoData.visibility = View.GONE
+                btnRefresh.visibility = View.GONE
+                videoAdapter.submitList(data)
             }
         }
+
     }
 
     private fun onVideoClick(video: VideoItem) {
@@ -172,9 +173,12 @@ class MainActivity : AppCompatActivity(), Player.Listener {
     ) {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (permissionsGranted()) {
-                initLocalVideos()
+                videosViewModel.loadVideos()
             } else {
-                viewBinding.tvNoData.visibility = View.VISIBLE
+                viewBinding.apply {
+                    tvNoData.visibility = View.VISIBLE
+                    btnRefresh.visibility = View.VISIBLE
+                }
                 showPermissionDialog()
             }
         }
