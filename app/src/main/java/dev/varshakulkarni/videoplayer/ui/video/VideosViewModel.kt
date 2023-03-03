@@ -23,7 +23,7 @@ class VideosViewModel @Inject constructor(private val datasource: VideoDataSourc
 
     private var job: Job? = null
 
-    init {
+    fun loadVideos() {
         viewModelScope.launch {
             _videos.postValue(datasource.getVideos())
         }
