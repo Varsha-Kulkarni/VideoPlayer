@@ -20,9 +20,9 @@
     <string name="durationformatlong" translatable="false"><xliff:g id="format">%1$d:%2$02d:%3$02d</xliff:g></string>
     <string name="local_videos">Local Videos:</string>
     <string name="loop">Loop</string>
-    <string name="url_help">Copy paste Youtube Url or click on share video on Youtube app and Open with YLPlayer!</string>
+    <string name="url_help">Copy paste Youtube Url or click on share video on Youtube app and Open with YLPlayer!\n Or Search History for Video Titles</string>
     <string name="url_hint">https://www.youtube.com/watch?v=566IYGSXQcc</string>
     <string name="error_yt_url">Please enter valid Youtube Url!</string>
-    <string name="no_data">No Videos! \n Check and Allow Media permisions</string>
+    <string name="no_data">No Videos! \n Check and Allow Media permissions</string>
     <string name="settings">Settings</string>
 </resources>
