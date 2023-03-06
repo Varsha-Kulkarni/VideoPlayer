@@ -11,7 +11,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import android.util.SparseArray
 import android.view.Gravity
@@ -34,21 +33,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
+import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackParameters
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.ClippingMediaSource
+import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.MergingMediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import at.huber.youtubeExtractor.VideoMeta
 import at.huber.youtubeExtractor.YouTubeExtractor
 import at.huber.youtubeExtractor.YtFile
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.PlaybackParameters
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
-import com.google.android.exoplayer2.source.ClippingMediaSource
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.MergingMediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.upstream.DefaultDataSource
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.google.android.exoplayer2.util.Util
 import com.google.android.material.slider.RangeSlider
 import dagger.hilt.android.AndroidEntryPoint
 import dev.varshakulkarni.videoplayer.R
@@ -59,6 +58,7 @@ import dev.varshakulkarni.videoplayer.utils.Utils
 import java.util.*
 import kotlin.math.pow
 
+@UnstableApi
 @AndroidEntryPoint
 class PlayerActivity : AppCompatActivity(), Player.Listener {
 
@@ -175,10 +175,11 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
             prepareYoutubePlayback()
         }
 
-        val mediaSession = MediaSessionCompat(this, packageName)
-        val mediaSessionConnector = MediaSessionConnector(mediaSession)
-        mediaSessionConnector.setPlayer(player)
-        mediaSession.isActive = true
+        //Todo: Migrate to MediaSession
+//        val mediaSession = MediaSessionCompat(this, packageName)
+//        val mediaSessionConnector = MediaSession(this, packageName)
+//        mediaSessionConnector.
+//        mediaSessionConnector.isActive = true
     }
 
     private fun prepareYoutubePlayback() {
