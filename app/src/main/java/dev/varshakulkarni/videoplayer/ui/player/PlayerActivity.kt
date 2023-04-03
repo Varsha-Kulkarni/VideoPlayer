@@ -1,3 +1,18 @@
+/*
+ * Copyright 2023 Varsha Kulkarni
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package dev.varshakulkarni.videoplayer.ui.player
 
 import android.annotation.SuppressLint
@@ -55,7 +70,6 @@ import dev.varshakulkarni.videoplayer.data.db.entity.VideoEntity
 import dev.varshakulkarni.videoplayer.databinding.ActivityPlayerBinding
 import dev.varshakulkarni.videoplayer.ui.video.VideoViewModel
 import dev.varshakulkarni.videoplayer.utils.Utils
-import java.util.*
 import kotlin.math.pow
 
 @UnstableApi
@@ -175,7 +189,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
             prepareYoutubePlayback()
         }
 
-        //Todo: Migrate to MediaSession
+        // Todo: Migrate to MediaSession
 //        val mediaSession = MediaSessionCompat(this, packageName)
 //        val mediaSessionConnector = MediaSession(this, packageName)
 //        mediaSessionConnector.
@@ -190,8 +204,8 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
             ) {
                 if (ytFiles != null) {
 
-                    val iTag = 137//tag of video 1080
-                    val audioTag = 140 //tag m4a audio
+                    val iTag = 137 // tag of video 1080
+                    val audioTag = 140 // tag m4a audio
                     // 720, 1080, 480
                     var videoUrl = ""
                     val iTags: List<Int> = listOf(22, 137, 18)
@@ -222,12 +236,12 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                         MergingMediaSource(
                             true, audioSource as ProgressiveMediaSource,
                             videoSource as ProgressiveMediaSource
-                        ), true
+                        ),
+                        true
                     )
                     prepareVideoPlayback()
                 }
             }
-
         }.extract(videoUri)
     }
 
@@ -294,7 +308,8 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                 val localVideoSource = ClippingMediaSource(
                     ProgressiveMediaSource
                         .Factory(DefaultDataSource.Factory(this))
-                        .createMediaSource(MediaItem.fromUri(it)), startMS, endMS
+                        .createMediaSource(MediaItem.fromUri(it)),
+                    startMS, endMS
                 )
                 player?.setMediaSource(localVideoSource)
             }
@@ -337,32 +352,32 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                 ((precision * ((pitchPosition - 60) * 0.1f)).toInt() / precision).toString()
                             pitchSeekbar?.progress = pitchPosition
                             pitchSeekbar?.setOnSeekBarChangeListener(object :
-                                SeekBar.OnSeekBarChangeListener {
-                                override fun onProgressChanged(
-                                    seekBar: SeekBar,
-                                    i: Int,
-                                    b: Boolean
-                                ) {
-                                    if (i > 0) {
-                                        pitchPosition = i
-                                        val pitch: Float = i / 60f
-                                        val currentPlaybackParameters = player?.playbackParameters
-                                        val speed: Float = currentPlaybackParameters?.speed ?: 1f
-                                        val value =
-                                            (precision * ((i - 60) * 0.1f)).toInt() / precision
-                                        pitchValueText?.text = value.toString()
+                                    SeekBar.OnSeekBarChangeListener {
+                                    override fun onProgressChanged(
+                                        seekBar: SeekBar,
+                                        i: Int,
+                                        b: Boolean
+                                    ) {
+                                        if (i > 0) {
+                                            pitchPosition = i
+                                            val pitch: Float = i / 60f
+                                            val currentPlaybackParameters = player?.playbackParameters
+                                            val speed: Float = currentPlaybackParameters?.speed ?: 1f
+                                            val value =
+                                                (precision * ((i - 60) * 0.1f)).toInt() / precision
+                                            pitchValueText?.text = value.toString()
 
-                                        val newPlaybackParameters = PlaybackParameters(speed, pitch)
-                                        updatePlaybackParameters(newPlaybackParameters)
+                                            val newPlaybackParameters = PlaybackParameters(speed, pitch)
+                                            updatePlaybackParameters(newPlaybackParameters)
+                                        }
                                     }
-                                }
 
-                                override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                                }
+                                    override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                                    }
 
-                                override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                                }
-                            })
+                                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                                    }
+                                })
                             val pitchResetButton =
                                 popupView?.findViewById<Button>(R.id.pitchResetButton)
                             pitchResetButton?.setOnClickListener {
@@ -434,27 +449,27 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                 )
                             tempoSeekBar?.progress = tempoPosition
                             tempoSeekBar?.setOnSeekBarChangeListener(object :
-                                SeekBar.OnSeekBarChangeListener {
-                                override fun onProgressChanged(
-                                    seekBar: SeekBar,
-                                    i: Int,
-                                    b: Boolean
-                                ) {
-                                    tempoPosition = i
-                                    val tempo: Float = i.toFloat() / 100
-                                    tempoValueText?.text =
-                                        String.format(resources.getString(R.string.tempo_value), i)
+                                    SeekBar.OnSeekBarChangeListener {
+                                    override fun onProgressChanged(
+                                        seekBar: SeekBar,
+                                        i: Int,
+                                        b: Boolean
+                                    ) {
+                                        tempoPosition = i
+                                        val tempo: Float = i.toFloat() / 100
+                                        tempoValueText?.text =
+                                            String.format(resources.getString(R.string.tempo_value), i)
 
-                                    val newPlaybackParameters = PlaybackParameters(tempo)
-                                    updatePlaybackParameters(newPlaybackParameters)
-                                }
+                                        val newPlaybackParameters = PlaybackParameters(tempo)
+                                        updatePlaybackParameters(newPlaybackParameters)
+                                    }
 
-                                override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                                }
+                                    override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                                    }
 
-                                override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                                }
-                            })
+                                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                                    }
+                                })
 
                             val tempoResetButton =
                                 popupView?.findViewById<Button>(R.id.tempoResetButton)
@@ -519,19 +534,17 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                             )
                             timelineSlider?.minSeparation = 1f
                             timelineSlider?.addOnSliderTouchListener(object :
-                                RangeSlider.OnSliderTouchListener {
+                                    RangeSlider.OnSliderTouchListener {
 
-                                override fun onStartTrackingTouch(slider: RangeSlider) {
+                                    override fun onStartTrackingTouch(slider: RangeSlider) {
+                                    }
 
-                                }
-
-                                override fun onStopTrackingTouch(slider: RangeSlider) {
-                                    sliderValues = slider.values
-                                    Log.d("", "slider values, $sliderValues ")
-                                    loopClip()
-                                }
-                            })
-
+                                    override fun onStopTrackingTouch(slider: RangeSlider) {
+                                        sliderValues = slider.values
+                                        Log.d("", "slider values, $sliderValues ")
+                                        loopClip()
+                                    }
+                                })
 
                             val isRepeatOn = popupView?.findViewById<CheckBox>(R.id.cbRepeat)
                             isRepeatOn?.isChecked = player?.repeatMode != Player.REPEAT_MODE_OFF
@@ -542,7 +555,6 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                     player?.repeatMode = Player.REPEAT_MODE_OFF
                             }
                         }
-
                     }
                     return false
                 }
@@ -562,7 +574,6 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         val popupWindow = PopupWindow(popupView, width, height, focus)
 
         popupWindow.showAtLocation(view, Gravity.CENTER, 30, 30)
-
     }
 
     fun showYoutubePlaybackError() {
@@ -583,7 +594,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
     }
 
-    //Called when the user touches the Home or Recents button to leave the app.
+    // Called when the user touches the Home or Recents button to leave the app.
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
         enterPIPMode()

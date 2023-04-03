@@ -1,3 +1,18 @@
+/*
+ * Copyright 2023 Varsha Kulkarni
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package dev.varshakulkarni.videoplayer.data
 
 import android.annotation.SuppressLint
@@ -33,14 +48,13 @@ class VideoRepository @Inject constructor(
     override suspend fun getVideos(): List<VideoItem> = withContext(Dispatchers.IO) {
         val videos = mutableListOf<VideoItem>()
 
-
         val uri: Uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
 
         // Display videos in alphabetical order based on their display name.
         val sortOrder = "${MediaStore.Video.Media.DATE_TAKEN} DESC"
         val cursor: Cursor? = contentResolver.query(uri, null, null, null, sortOrder)
 
-        //looping through all rows and adding to list
+        // looping through all rows and adding to list
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 val id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID))
@@ -55,7 +69,8 @@ class VideoRepository @Inject constructor(
                     ContentUris.withAppendedId(
                         MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                         id
-                    ), title, duration, size
+                    ),
+                    title, duration, size
                 )
                 videos.add(video)
             } while (cursor.moveToNext())
@@ -72,5 +87,4 @@ class VideoRepository @Inject constructor(
 
     override suspend fun getVideoByUrl(url: String): VideoEntity? = videosDao.getVideoByUrl(url)
     override suspend fun deleteLeastRecentVideos() = videosDao.deleteLeastRecentlyUsed()
-
 }
