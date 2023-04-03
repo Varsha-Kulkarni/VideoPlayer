@@ -9,14 +9,12 @@ import android.os.Bundle
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.exoplayer2.Player
 import com.skydoves.balloon.ArrowPositionRules
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
@@ -31,9 +29,12 @@ import dev.varshakulkarni.videoplayer.ui.video.VideoItem
 import dev.varshakulkarni.videoplayer.ui.video.VideosListAdapter
 import dev.varshakulkarni.videoplayer.ui.video.VideosViewModel
 import dev.varshakulkarni.videoplayer.utils.Utils
+import dev.varshakulkarni.videoplayer.utils.onRightDrawableClicked
+
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), Player.Listener {
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+class MainActivity : AppCompatActivity() {
 
     private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityMainBinding.inflate(layoutInflater)
@@ -54,105 +55,111 @@ class MainActivity : AppCompatActivity(), Player.Listener {
             this@MainActivity,
             R.layout.item_video_title, ytVideos
         )
-
-        viewBinding.lvHistory.adapter = searchAdapter
-        viewBinding.lvHistory.setOnItemClickListener { adapterView: AdapterView<*>, view2: View, i: Int, l: Long ->
-            ytVideo = adapterView.getItemAtPosition(i) as VideoEntity
-            viewBinding.etVideoLink.text =
-                Editable.Factory.getInstance().newEditable(ytVideo?.title)
-        }
-
-        viewBinding.etVideoLink.addTextChangedListener(object : TextWatcher {
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                videosViewModel.searchVideo(s.toString())
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-
-            override fun beforeTextChanged(
-                s: CharSequence?,
-                start: Int,
-                count: Int,
-                after: Int
-            ) = Unit
-        })
-
-        videosViewModel.ytVideos.observe(this) {
-            ytVideos.clear()
-            ytVideos.addAll(it)
-            searchAdapter.notifyDataSetChanged()
-            Log.i("VarshaSearch", "")
-        }
-
-        viewBinding.btnPlayVideo.setOnClickListener {
-            val url = viewBinding.etVideoLink.text.toString()
-            var data: String? = null
-
-            if (Utils.isYoutubeUrl(url))
-                data = url
-            else if (ytVideo != null)
-                data = ytVideo?.url
-
-            if (data == null) {
-                viewBinding.etVideoLink.error = resources.getString(R.string.error_yt_url)
-            } else {
-                val intent = Intent(this, PlayerActivity::class.java)
-                intent.putExtra("youtube_link", data)
-                startActivity(intent)
-            }
-        }
-
-        viewBinding.btnHelp.setOnClickListener {
-            val balloon = Balloon.Builder(this)
-                .setWidthRatio(1.0f)
-                .setHeight(BalloonSizeSpec.WRAP)
-                .setText(resources.getString(R.string.url_help))
-                .setTextSize(15f)
-                .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
-                .setArrowSize(10)
-                .setArrowPosition(0.5f)
-                .setPadding(12)
-                .setCornerRadius(8f)
-                .setBalloonAnimation(BalloonAnimation.FADE)
-                .setLifecycleOwner(this)
-                .build()
-            balloon.showAtCenter(it, 0, 30)
-        }
-
-        viewBinding.btnRefresh.setOnClickListener {
-            if (!permissionsGranted()) {
-                showPermissionDialog()
-            } else {
-                videosViewModel.loadVideos()
-            }
-        }
-
         videoAdapter = VideosListAdapter { video -> onVideoClick(video) }
-        viewBinding.rvVideos.adapter = videoAdapter
 
-        // Request local media permissions
-        if (permissionsGranted()) {
-            videosViewModel.loadVideos()
-        } else {
-            viewBinding.apply {
+        viewBinding.apply {
+            rvVideos.adapter = videoAdapter
+
+            etVideoLink.apply {
+                onRightDrawableClicked {
+                    it.text.clear()
+                    ytVideo = null
+                }
+
+                addTextChangedListener(object : TextWatcher {
+                    override fun onTextChanged(
+                        s: CharSequence,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
+                        videosViewModel.searchVideo(s.toString())
+                    }
+
+                    override fun afterTextChanged(s: Editable?) {
+
+                    }
+
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) = Unit
+                })
+                lvHistory.adapter = searchAdapter
+                lvHistory.setOnItemClickListener { adapterView: AdapterView<*>, view2: View, i: Int, l: Long ->
+                    ytVideo = adapterView.getItemAtPosition(i) as VideoEntity
+                    text =
+                        Editable.Factory.getInstance().newEditable(ytVideo?.title)
+                    error = null
+                }
+                btnPlayVideo.setOnClickListener {
+                    val url = text.toString()
+                    var data: String? = null
+
+                    if (Utils.isYoutubeUrl(url))
+                        data = url
+                    else if (ytVideo != null)
+                        data = ytVideo?.url
+
+                    if (data == null) {
+                        error = resources.getString(R.string.error_yt_url)
+                    } else {
+                        val intent = Intent(this@MainActivity, PlayerActivity::class.java)
+                        intent.putExtra("youtube_link", data)
+                        startActivity(intent)
+                    }
+                }
+            }
+
+            btnRefresh.setOnClickListener {
+                if (!permissionsGranted()) {
+                    showPermissionDialog()
+                } else {
+                    videosViewModel.loadVideos()
+                }
+            }
+            // Request local media permissions
+            if (permissionsGranted()) {
+                videosViewModel.loadVideos()
+            } else {
                 tvNoData.visibility = View.VISIBLE
                 btnRefresh.visibility = View.VISIBLE
-            }
-            ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS.toTypedArray(), REQUEST_CODE_PERMISSIONS
-            )
-        }
 
-        videosViewModel.videos.observe(this) { data ->
-            viewBinding.run {
+                ActivityCompat.requestPermissions(
+                    this@MainActivity, REQUIRED_PERMISSIONS.toTypedArray(), REQUEST_CODE_PERMISSIONS
+                )
+            }
+
+            btnHelp.setOnClickListener {
+                val balloon = Balloon.Builder(this@MainActivity)
+                    .setWidthRatio(1.0f)
+                    .setHeight(BalloonSizeSpec.WRAP)
+                    .setText(resources.getString(R.string.url_help))
+                    .setTextSize(15f)
+                    .setArrowPositionRules(ArrowPositionRules.ALIGN_ANCHOR)
+                    .setArrowSize(10)
+                    .setArrowPosition(0.5f)
+                    .setPadding(12)
+                    .setCornerRadius(8f)
+                    .setBalloonAnimation(BalloonAnimation.FADE)
+                    .setLifecycleOwner(this@MainActivity)
+                    .build()
+                balloon.showAtCenter(it, 0, 30)
+            }
+            videosViewModel.videos.observe(this@MainActivity) { data ->
                 tvNoData.visibility = View.GONE
                 btnRefresh.visibility = View.GONE
                 videoAdapter.submitList(data)
             }
         }
 
+        videosViewModel.ytVideos.observe(this) {
+            ytVideos.clear()
+            ytVideos.addAll(it)
+            searchAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun onVideoClick(video: VideoItem) {
@@ -171,6 +178,7 @@ class MainActivity : AppCompatActivity(), Player.Listener {
         requestCode: Int, permissions: Array<String>, grantResults:
         IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (permissionsGranted()) {
                 videosViewModel.loadVideos()
