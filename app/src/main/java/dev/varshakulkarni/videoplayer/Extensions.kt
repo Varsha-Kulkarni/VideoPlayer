@@ -13,17 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.varshakulkarni.videoplayer.ui.video
+package dev.varshakulkarni.videoplayer
 
-import android.net.Uri
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import android.content.Context
 
-@Parcelize
-data class VideoItem(
-    val id: Long,
-    val uri: Uri?,
-    val name: String?,
-    val duration: Int,
-    val size: Int
-) : Parcelable
+fun Int?.formatDurationString(context: Context): String {
+
+    var seconds = (this?.toLong() ?: 0) / 1000
+
+    val hours: Long = seconds / 3600
+    seconds %= 3600
+    val minutes: Long = seconds / 60
+    seconds %= 60
+
+    val formatString = if (hours == 0L) {
+        R.string.durationformatshort
+    } else {
+        R.string.durationformatlong
+    }
+    val durationFormat = context.resources.getString(formatString)
+    return String.format(durationFormat, hours, minutes, seconds)
+}

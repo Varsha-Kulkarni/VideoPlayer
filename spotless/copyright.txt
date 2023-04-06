@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Varsha Kulkarni
+ * Copyright $YEAR Varsha Kulkarni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.varshakulkarni.videoplayer.ui.video
-
-import android.net.Uri
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
-@Parcelize
-data class VideoItem(
-    val id: Long,
-    val uri: Uri?,
-    val name: String?,
-    val duration: Int,
-    val size: Int
-) : Parcelable
