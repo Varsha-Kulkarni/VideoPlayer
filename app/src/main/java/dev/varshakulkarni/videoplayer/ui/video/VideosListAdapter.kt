@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import dev.varshakulkarni.videoplayer.databinding.ItemVideoBinding
-import dev.varshakulkarni.videoplayer.formatDurationString
+import dev.varshakulkarni.videoplayer.utils.formatDurationString
 
 class VideosListAdapter(
     private val onVideoClick: (VideoItem) -> Unit

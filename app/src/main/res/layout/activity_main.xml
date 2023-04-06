@@ -22,6 +22,7 @@
         android:hint="@string/url_hint"
         android:inputType="text"
         android:textSize="12sp"
+        android:drawableEnd="@drawable/ic_clear"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvYoutubeLink"
         app:layout_constraintWidth_percent="0.9" />
