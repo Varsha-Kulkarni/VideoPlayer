@@ -9,6 +9,12 @@
 - List/Play Local videos.
 - Play videos from locally saved history.
 
+# Design and Tech Stack
+
+- The App was built for personal use where the requirement was to practice dance by looping the clip or sing Karaoke tracks directly from Youtube by chaging the pitch/tempo. 
+- It uses [Youtube Extractor](https://github.com/HaarigerHarald/android-youtubeExtractor) for extracting Youtube Urls and Media 3 APIs for Video Playback
+
+
 # Contributions
 
 Most welcome to file issues, PRs.
