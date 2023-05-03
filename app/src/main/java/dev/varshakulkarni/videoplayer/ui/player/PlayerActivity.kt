@@ -35,9 +35,11 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.CompoundButton
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.ProgressBar
@@ -76,6 +78,7 @@ import kotlin.math.pow
 @AndroidEntryPoint
 class PlayerActivity : AppCompatActivity(), Player.Listener {
 
+    private var pitchValueText: TextView? = null
     private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityPlayerBinding.inflate(layoutInflater)
     }
@@ -345,11 +348,13 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                             player?.pause()
                             showSettingsPopup(this@PlayerActivity.viewBinding.parentLayout)
                             val precision = 10.0.pow(1.0)
-                            val pitchValueText =
-                                popupView?.findViewById<TextView>(R.id.pitchValueText)
+                            pitchValueText =
+                                popupView?.findViewById<EditText>(R.id.pitchValueText)
+
                             val pitchSeekbar = popupView?.findViewById<SeekBar>(R.id.pitchSeekbar)
                             pitchValueText?.text =
                                 ((precision * ((pitchPosition - 60) * 0.1f)).toInt() / precision).toString()
+
                             pitchSeekbar?.progress = pitchPosition
                             pitchSeekbar?.setOnSeekBarChangeListener(object :
                                     SeekBar.OnSeekBarChangeListener {
@@ -378,6 +383,34 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                                     override fun onStopTrackingTouch(seekBar: SeekBar?) {
                                     }
                                 })
+
+                            pitchValueText?.setOnEditorActionListener { v, actionId, event ->
+                                var handled = false
+                                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                                    val newValue = v.text.toString().toDouble()
+                                    var newProgress = 0
+                                    if (newValue > 6) {
+                                        newProgress = 120
+                                    } else if (newValue < -6) {
+                                        newProgress = 1
+                                    } else if (newValue < 6) {
+                                        newProgress = (60 + newValue * 10).toInt()
+                                    }
+                                    pitchPosition = newProgress
+                                    pitchSeekbar?.progress = newProgress
+                                    val newPitch: Float = newProgress / 60f
+                                    val currentPlaybackParameters = player?.playbackParameters
+
+                                    val speed: Float = currentPlaybackParameters?.speed ?: 1f
+                                    val newPlaybackParameters =
+                                        PlaybackParameters(speed, newPitch)
+                                    updatePlaybackParameters(newPlaybackParameters)
+
+                                    handled = true
+                                }
+                                handled
+                            }
+
                             val pitchResetButton =
                                 popupView?.findViewById<Button>(R.id.pitchResetButton)
                             pitchResetButton?.setOnClickListener {
