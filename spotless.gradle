@@ -2,16 +2,6 @@ apply plugin: 'com.diffplug.spotless'
 
 spotless {
 
-    format 'misc', {
-        // define the files to apply `misc` to
-        target '**/*.gradle', '**/*.md', '**/.gitignore'
-
-        // define the steps to apply to those files
-        indentWithSpaces()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-
     kotlin {
         target '**/*.kt'
         targetExclude("$buildDir/**/*.kt")
