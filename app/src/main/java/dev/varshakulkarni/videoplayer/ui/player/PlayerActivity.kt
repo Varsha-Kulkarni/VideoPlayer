@@ -21,8 +21,6 @@ import android.app.PictureInPictureParams
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -34,7 +32,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.CheckBox
@@ -117,12 +114,6 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
-            WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION
-        )
-        supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
         setupMenu()
 
         intent.getStringExtra("youtube_link")?.let {
@@ -191,12 +182,6 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         } else {
             prepareYoutubePlayback()
         }
-
-        // Todo: Migrate to MediaSession
-//        val mediaSession = MediaSessionCompat(this, packageName)
-//        val mediaSessionConnector = MediaSession(this, packageName)
-//        mediaSessionConnector.
-//        mediaSessionConnector.isActive = true
     }
 
     private fun prepareYoutubePlayback() {
@@ -347,246 +332,6 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                         R.id.action_settings -> {
                             player?.pause()
                             showSettingsPopup(this@PlayerActivity.viewBinding.parentLayout)
-                            val precision = 10.0.pow(1.0)
-                            pitchValueText =
-                                popupView?.findViewById<EditText>(R.id.pitchValueText)
-
-                            val pitchSeekbar = popupView?.findViewById<SeekBar>(R.id.pitchSeekbar)
-                            pitchValueText?.text =
-                                ((precision * ((pitchPosition - 60) * 0.1f)).toInt() / precision).toString()
-
-                            pitchSeekbar?.progress = pitchPosition
-                            pitchSeekbar?.setOnSeekBarChangeListener(object :
-                                    SeekBar.OnSeekBarChangeListener {
-                                    override fun onProgressChanged(
-                                        seekBar: SeekBar,
-                                        i: Int,
-                                        b: Boolean
-                                    ) {
-                                        if (i > 0) {
-                                            pitchPosition = i
-                                            val pitch: Float = i / 60f
-                                            val currentPlaybackParameters = player?.playbackParameters
-                                            val speed: Float = currentPlaybackParameters?.speed ?: 1f
-                                            val value =
-                                                (precision * ((i - 60) * 0.1f)).toInt() / precision
-                                            pitchValueText?.text = value.toString()
-
-                                            val newPlaybackParameters = PlaybackParameters(speed, pitch)
-                                            updatePlaybackParameters(newPlaybackParameters)
-                                        }
-                                    }
-
-                                    override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                                    }
-
-                                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                                    }
-                                })
-
-                            pitchValueText?.setOnEditorActionListener { v, actionId, event ->
-                                var handled = false
-                                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                                    val newValue = v.text.toString().toDouble()
-                                    var newProgress = 0
-                                    if (newValue > 6) {
-                                        newProgress = 120
-                                    } else if (newValue < -6) {
-                                        newProgress = 1
-                                    } else if (newValue < 6) {
-                                        newProgress = (60 + newValue * 10).toInt()
-                                    }
-                                    pitchPosition = newProgress
-                                    pitchSeekbar?.progress = newProgress
-                                    val newPitch: Float = newProgress / 60f
-                                    val currentPlaybackParameters = player?.playbackParameters
-
-                                    val speed: Float = currentPlaybackParameters?.speed ?: 1f
-                                    val newPlaybackParameters =
-                                        PlaybackParameters(speed, newPitch)
-                                    updatePlaybackParameters(newPlaybackParameters)
-
-                                    handled = true
-                                }
-                                handled
-                            }
-
-                            val pitchResetButton =
-                                popupView?.findViewById<Button>(R.id.pitchResetButton)
-                            pitchResetButton?.setOnClickListener {
-                                pitchPosition = 60
-
-                                val pitch = 1f
-                                pitchSeekbar?.progress = 60
-                                pitchValueText?.text = 0f.toString()
-
-                                val currentPlaybackParameters = player?.playbackParameters
-                                val speed: Float = currentPlaybackParameters?.speed ?: 1.0f
-
-                                val newPlaybackParameters = PlaybackParameters(speed, pitch)
-                                updatePlaybackParameters(newPlaybackParameters)
-                            }
-                            val pitchMinusButton =
-                                popupView?.findViewById<Button>(R.id.pitchMinusButton)
-                            pitchMinusButton?.setOnClickListener {
-                                val currentPlaybackParameters = player?.playbackParameters
-                                val currentProgress = pitchSeekbar?.progress
-                                if (currentProgress != null) {
-                                    if (currentProgress > 1) {
-                                        val newProgress = currentProgress.minus(1)
-                                        pitchPosition = newProgress
-                                        pitchSeekbar.progress = newProgress
-                                        val newPitch: Float = newProgress / 60f
-                                        val value =
-                                            (precision * (newProgress - 60) * 0.1f).toInt() / precision
-                                        pitchValueText?.text = value.toString()
-
-                                        val speed: Float = currentPlaybackParameters?.speed ?: 1f
-                                        val newPlaybackParameters =
-                                            PlaybackParameters(speed, newPitch)
-                                        updatePlaybackParameters(newPlaybackParameters)
-                                    }
-                                }
-                            }
-                            val pitchPlusButton =
-                                popupView?.findViewById<Button>(R.id.pitchPlusButton)
-                            pitchPlusButton?.setOnClickListener {
-                                val currentPlaybackParameters = player?.playbackParameters
-                                val currentProgress = pitchSeekbar?.progress
-                                if (currentProgress != null) {
-                                    if (currentProgress < 100) {
-                                        val newProgress = currentProgress.plus(1)
-                                        pitchPosition = newProgress
-
-                                        pitchSeekbar.progress = newProgress
-                                        val value =
-                                            (precision * (newProgress - 60) * 0.1f).toInt() / precision
-                                        pitchValueText?.text = value.toString()
-
-                                        val newPitch: Float = newProgress / 60f
-                                        val speed: Float = currentPlaybackParameters?.speed ?: 1.0f
-                                        val newPlaybackParameters =
-                                            PlaybackParameters(speed, newPitch)
-                                        updatePlaybackParameters(newPlaybackParameters)
-                                    }
-                                }
-                            }
-
-                            val tempoSeekBar = popupView?.findViewById<SeekBar>(R.id.tempoSeekbar)
-                            val tempoValueText =
-                                popupView?.findViewById<TextView>(R.id.tempoValueText)
-                            tempoValueText?.text =
-                                String.format(
-                                    resources.getString(R.string.tempo_value),
-                                    tempoPosition
-                                )
-                            tempoSeekBar?.progress = tempoPosition
-                            tempoSeekBar?.setOnSeekBarChangeListener(object :
-                                    SeekBar.OnSeekBarChangeListener {
-                                    override fun onProgressChanged(
-                                        seekBar: SeekBar,
-                                        i: Int,
-                                        b: Boolean
-                                    ) {
-                                        tempoPosition = i
-                                        val tempo: Float = i.toFloat() / 100
-                                        tempoValueText?.text =
-                                            String.format(resources.getString(R.string.tempo_value), i)
-
-                                        val newPlaybackParameters = PlaybackParameters(tempo)
-                                        updatePlaybackParameters(newPlaybackParameters)
-                                    }
-
-                                    override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                                    }
-
-                                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                                    }
-                                })
-
-                            val tempoResetButton =
-                                popupView?.findViewById<Button>(R.id.tempoResetButton)
-                            tempoResetButton?.setOnClickListener {
-                                tempoPosition = 100
-                                val tempo = 1f
-                                tempoSeekBar?.progress = 100
-                                tempoValueText?.text =
-                                    String.format(resources.getString(R.string.tempo_value), 100)
-
-                                val newPlaybackParameters = PlaybackParameters(tempo)
-                                updatePlaybackParameters(newPlaybackParameters)
-                            }
-
-                            val tempoPlusButton =
-                                popupView?.findViewById<Button>(R.id.tempoPlusButton)
-                            tempoPlusButton?.setOnClickListener {
-                                val currentProgress = tempoSeekBar?.progress
-                                if (currentProgress != null) {
-                                    if (currentProgress < 200) {
-                                        val newProgress = currentProgress.plus(1)
-                                        tempoPosition = newProgress
-                                        tempoSeekBar.progress = newProgress
-                                        tempoValueText?.text = newProgress.toString()
-
-                                        val newTempo: Float = newProgress / 100f
-                                        val newPlaybackParameters = PlaybackParameters(newTempo)
-                                        updatePlaybackParameters(newPlaybackParameters)
-                                    }
-                                }
-                            }
-
-                            val tempoMinusButton =
-                                popupView?.findViewById<Button>(R.id.tempoMinusButton)
-                            tempoMinusButton?.setOnClickListener {
-                                val currentProgress = tempoSeekBar?.progress
-                                if (currentProgress != null) {
-                                    if (currentProgress > 1) {
-                                        val newProgress = currentProgress.minus(1)
-                                        tempoPosition = newProgress
-                                        tempoSeekBar.progress = newProgress
-                                        tempoValueText?.text = newProgress.toString()
-
-                                        val newTempo: Float = newProgress / 100f
-                                        val newPlaybackParameters = PlaybackParameters(newTempo)
-                                        updatePlaybackParameters(newPlaybackParameters)
-                                    }
-                                }
-                            }
-                            val timelineSlider = popupView?.findViewById<RangeSlider>(R.id.timeline)
-                            timelineSlider?.setLabelFormatter { value ->
-                                Utils.formatToDigitalClock(value.toLong())
-                            }
-                            popviewProgress = popupView?.findViewById(R.id.popviewProgressBar)
-
-                            timelineSlider?.valueFrom = 0f
-                            timelineSlider?.valueTo =
-                                videoDuration?.toFloat() ?: 1f
-                            timelineSlider?.values = sliderValues ?: arrayListOf(
-                                0f,
-                                videoDuration?.toFloat() ?: 1f
-                            )
-                            timelineSlider?.minSeparation = 1f
-                            timelineSlider?.addOnSliderTouchListener(object :
-                                    RangeSlider.OnSliderTouchListener {
-
-                                    override fun onStartTrackingTouch(slider: RangeSlider) {
-                                    }
-
-                                    override fun onStopTrackingTouch(slider: RangeSlider) {
-                                        sliderValues = slider.values
-                                        Log.d("", "slider values, $sliderValues ")
-                                        loopClip()
-                                    }
-                                })
-
-                            val isRepeatOn = popupView?.findViewById<CheckBox>(R.id.cbRepeat)
-                            isRepeatOn?.isChecked = player?.repeatMode != Player.REPEAT_MODE_OFF
-                            isRepeatOn?.setOnCheckedChangeListener { compoundButton: CompoundButton, isChecked: Boolean ->
-                                if (isChecked)
-                                    player?.repeatMode = Player.REPEAT_MODE_ONE
-                                else
-                                    player?.repeatMode = Player.REPEAT_MODE_OFF
-                            }
                         }
                     }
                     return false
@@ -594,6 +339,249 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
             },
             this, Lifecycle.State.RESUMED
         )
+    }
+
+    private fun popViewSettings() {
+        val precision = 10.0.pow(1.0)
+        pitchValueText =
+            popupView?.findViewById<EditText>(R.id.pitchValueText)
+
+        val pitchSeekbar = popupView?.findViewById<SeekBar>(R.id.pitchSeekbar)
+        pitchValueText?.text =
+            ((precision * ((pitchPosition - 60) * 0.1f)).toInt() / precision).toString()
+
+        pitchSeekbar?.progress = pitchPosition
+        pitchSeekbar?.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar,
+                    i: Int,
+                    b: Boolean
+                ) {
+                    if (i > 0) {
+                        pitchPosition = i
+                        val pitch: Float = i / 60f
+                        val currentPlaybackParameters = player?.playbackParameters
+                        val speed: Float = currentPlaybackParameters?.speed ?: 1f
+                        val value =
+                            (precision * ((i - 60) * 0.1f)).toInt() / precision
+                        pitchValueText?.text = value.toString()
+
+                        val newPlaybackParameters = PlaybackParameters(speed, pitch)
+                        updatePlaybackParameters(newPlaybackParameters)
+                    }
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                }
+            })
+
+        pitchValueText?.setOnEditorActionListener { v, actionId, event ->
+            var handled = false
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                val newValue = v.text.toString().toDouble()
+                var newProgress = 0
+                if (newValue > 6) {
+                    newProgress = 120
+                } else if (newValue < -6) {
+                    newProgress = 1
+                } else if (newValue < 6) {
+                    newProgress = (60 + newValue * 10).toInt()
+                }
+                pitchPosition = newProgress
+                pitchSeekbar?.progress = newProgress
+                val newPitch: Float = newProgress / 60f
+                val currentPlaybackParameters = player?.playbackParameters
+
+                val speed: Float = currentPlaybackParameters?.speed ?: 1f
+                val newPlaybackParameters =
+                    PlaybackParameters(speed, newPitch)
+                updatePlaybackParameters(newPlaybackParameters)
+
+                handled = true
+            }
+            handled
+        }
+
+        val pitchResetButton =
+            popupView?.findViewById<Button>(R.id.pitchResetButton)
+        pitchResetButton?.setOnClickListener {
+            pitchPosition = 60
+
+            val pitch = 1f
+            pitchSeekbar?.progress = 60
+            pitchValueText?.text = 0f.toString()
+
+            val currentPlaybackParameters = player?.playbackParameters
+            val speed: Float = currentPlaybackParameters?.speed ?: 1.0f
+
+            val newPlaybackParameters = PlaybackParameters(speed, pitch)
+            updatePlaybackParameters(newPlaybackParameters)
+        }
+        val pitchMinusButton =
+            popupView?.findViewById<Button>(R.id.pitchMinusButton)
+        pitchMinusButton?.setOnClickListener {
+            val currentPlaybackParameters = player?.playbackParameters
+            val currentProgress = pitchSeekbar?.progress
+            if (currentProgress != null) {
+                if (currentProgress > 1) {
+                    val newProgress = currentProgress.minus(1)
+                    pitchPosition = newProgress
+                    pitchSeekbar.progress = newProgress
+                    val newPitch: Float = newProgress / 60f
+                    val value =
+                        (precision * (newProgress - 60) * 0.1f).toInt() / precision
+                    pitchValueText?.text = value.toString()
+
+                    val speed: Float = currentPlaybackParameters?.speed ?: 1f
+                    val newPlaybackParameters =
+                        PlaybackParameters(speed, newPitch)
+                    updatePlaybackParameters(newPlaybackParameters)
+                }
+            }
+        }
+        val pitchPlusButton =
+            popupView?.findViewById<Button>(R.id.pitchPlusButton)
+        pitchPlusButton?.setOnClickListener {
+            val currentPlaybackParameters = player?.playbackParameters
+            val currentProgress = pitchSeekbar?.progress
+            if (currentProgress != null) {
+                if (currentProgress < 100) {
+                    val newProgress = currentProgress.plus(1)
+                    pitchPosition = newProgress
+
+                    pitchSeekbar.progress = newProgress
+                    val value =
+                        (precision * (newProgress - 60) * 0.1f).toInt() / precision
+                    pitchValueText?.text = value.toString()
+
+                    val newPitch: Float = newProgress / 60f
+                    val speed: Float = currentPlaybackParameters?.speed ?: 1.0f
+                    val newPlaybackParameters =
+                        PlaybackParameters(speed, newPitch)
+                    updatePlaybackParameters(newPlaybackParameters)
+                }
+            }
+        }
+
+        val tempoSeekBar = popupView?.findViewById<SeekBar>(R.id.tempoSeekbar)
+        val tempoValueText =
+            popupView?.findViewById<TextView>(R.id.tempoValueText)
+        tempoValueText?.text =
+            String.format(
+                resources.getString(R.string.tempo_value),
+                tempoPosition
+            )
+        tempoSeekBar?.progress = tempoPosition
+        tempoSeekBar?.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar,
+                    i: Int,
+                    b: Boolean
+                ) {
+                    tempoPosition = i
+                    val tempo: Float = i.toFloat() / 100
+                    tempoValueText?.text =
+                        String.format(resources.getString(R.string.tempo_value), i)
+
+                    val newPlaybackParameters = PlaybackParameters(tempo)
+                    updatePlaybackParameters(newPlaybackParameters)
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                }
+            })
+
+        val tempoResetButton =
+            popupView?.findViewById<Button>(R.id.tempoResetButton)
+        tempoResetButton?.setOnClickListener {
+            tempoPosition = 100
+            val tempo = 1f
+            tempoSeekBar?.progress = 100
+            tempoValueText?.text =
+                String.format(resources.getString(R.string.tempo_value), 100)
+
+            val newPlaybackParameters = PlaybackParameters(tempo)
+            updatePlaybackParameters(newPlaybackParameters)
+        }
+
+        val tempoPlusButton =
+            popupView?.findViewById<Button>(R.id.tempoPlusButton)
+        tempoPlusButton?.setOnClickListener {
+            val currentProgress = tempoSeekBar?.progress
+            if (currentProgress != null) {
+                if (currentProgress < 200) {
+                    val newProgress = currentProgress.plus(1)
+                    tempoPosition = newProgress
+                    tempoSeekBar.progress = newProgress
+                    tempoValueText?.text = newProgress.toString()
+
+                    val newTempo: Float = newProgress / 100f
+                    val newPlaybackParameters = PlaybackParameters(newTempo)
+                    updatePlaybackParameters(newPlaybackParameters)
+                }
+            }
+        }
+
+        val tempoMinusButton =
+            popupView?.findViewById<Button>(R.id.tempoMinusButton)
+        tempoMinusButton?.setOnClickListener {
+            val currentProgress = tempoSeekBar?.progress
+            if (currentProgress != null) {
+                if (currentProgress > 1) {
+                    val newProgress = currentProgress.minus(1)
+                    tempoPosition = newProgress
+                    tempoSeekBar.progress = newProgress
+                    tempoValueText?.text = newProgress.toString()
+
+                    val newTempo: Float = newProgress / 100f
+                    val newPlaybackParameters = PlaybackParameters(newTempo)
+                    updatePlaybackParameters(newPlaybackParameters)
+                }
+            }
+        }
+        val timelineSlider = popupView?.findViewById<RangeSlider>(R.id.timeline)
+        timelineSlider?.setLabelFormatter { value ->
+            Utils.formatToDigitalClock(value.toLong())
+        }
+        popviewProgress = popupView?.findViewById(R.id.popviewProgressBar)
+
+        timelineSlider?.valueFrom = 0f
+        timelineSlider?.valueTo =
+            videoDuration?.toFloat() ?: 1f
+        timelineSlider?.values = sliderValues ?: arrayListOf(
+            0f,
+            videoDuration?.toFloat() ?: 1f
+        )
+        timelineSlider?.minSeparation = 1f
+        timelineSlider?.addOnSliderTouchListener(object :
+                RangeSlider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: RangeSlider) {
+                }
+
+                override fun onStopTrackingTouch(slider: RangeSlider) {
+                    sliderValues = slider.values
+                    Log.d("", "slider values, $sliderValues ")
+                    loopClip()
+                }
+            })
+
+        val isRepeatOn = popupView?.findViewById<CheckBox>(R.id.cbRepeat)
+        isRepeatOn?.isChecked = player?.repeatMode != Player.REPEAT_MODE_OFF
+        isRepeatOn?.setOnCheckedChangeListener { compoundButton: CompoundButton, isChecked: Boolean ->
+            if (isChecked)
+                player?.repeatMode = Player.REPEAT_MODE_ONE
+            else
+                player?.repeatMode = Player.REPEAT_MODE_OFF
+        }
     }
 
     fun showSettingsPopup(view: View?) {
@@ -607,6 +595,8 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         val popupWindow = PopupWindow(popupView, width, height, focus)
 
         popupWindow.showAtLocation(view, Gravity.CENTER, 30, 30)
+
+        popViewSettings()
     }
 
     fun showYoutubePlaybackError() {

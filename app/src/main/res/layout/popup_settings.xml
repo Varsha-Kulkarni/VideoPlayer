@@ -47,9 +47,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="@string/pitch_value"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal|numberSigned"
+        android:text="@string/pitch_value"
         app:layout_constraintEnd_toStartOf="@+id/pitchResetButton"
         app:layout_constraintStart_toEndOf="@+id/pitchTextView"
         app:layout_constraintTop_toBottomOf="@id/tvHeading" />
@@ -61,6 +61,7 @@
         android:layout_marginVertical="8dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/ic_refresh_24"
+        app:backgroundTint="@color/colorSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvHeading" />
 
@@ -72,6 +73,7 @@
         android:layout_marginStart="16dp"
         android:background="@drawable/minus"
         android:padding="24dp"
+        app:backgroundTint="@color/colorSecondary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/pitchTextView" />
 
@@ -97,6 +99,7 @@
         android:layout_marginEnd="16dp"
         android:background="@drawable/plus"
         android:padding="24dp"
+        app:backgroundTint="@color/colorSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/pitchSeekbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pitchResetButton" />
@@ -113,7 +116,6 @@
     <TextView
         android:id="@+id/tempoTextView"
         style="@style/SettingsTextStyle"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginVertical="8dp"
@@ -126,7 +128,6 @@
     <TextView
         android:id="@+id/tempoValueText"
         style="@style/SettingsTextStyle"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginVertical="8dp"
@@ -142,6 +143,7 @@
         android:layout_marginEnd="16dp"
         android:background="@drawable/ic_refresh_24"
         android:padding="24dp"
+        app:backgroundTint="@color/colorSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/tempoTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tempoTextView" />
@@ -153,6 +155,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/minus"
+        app:backgroundTint="@color/colorSecondary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tempoTextView" />
 
@@ -177,6 +180,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/plus"
+        app:backgroundTint="@color/colorSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/tempoSeekbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tempoResetButton" />
@@ -221,7 +225,10 @@
         app:labelBehavior="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvLooperLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/tvLooperLabel"
+        app:thumbColor="@color/colorSecondary"
+        app:trackColorActive="@color/colorSecondary"
+        app:trackColorInactive="@color/lightGrayColor" />
 
     <View
         android:id="@+id/bottomSeparator"
