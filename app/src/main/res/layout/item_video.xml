@@ -22,7 +22,8 @@
         android:contentDescription="@string/video_icon"
         android:src="@drawable/ic_videocam_24"
         app:layout_constraintBottom_toBottomOf="@id/iv_thumbnail"
-        app:layout_constraintStart_toStartOf="@id/iv_thumbnail" />
+        app:layout_constraintStart_toStartOf="@id/iv_thumbnail"
+        app:tint="@color/white" />
 
     <TextView
         android:id="@+id/tv_video_duration"

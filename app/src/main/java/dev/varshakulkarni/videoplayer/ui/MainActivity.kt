@@ -65,6 +65,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
+        supportActionBar?.setIcon(R.drawable.appbar_icon)
+
+        supportActionBar?.setDisplayUseLogoEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
         searchAdapter = SearchAdapter(
             this@MainActivity,
             R.layout.item_video_title, ytVideos
