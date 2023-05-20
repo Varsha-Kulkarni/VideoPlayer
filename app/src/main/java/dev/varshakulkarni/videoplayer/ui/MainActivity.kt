@@ -20,6 +20,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.text.Editable
@@ -65,11 +66,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
-        supportActionBar?.setIcon(R.drawable.appbar_icon)
-
-        supportActionBar?.setDisplayUseLogoEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.apply {
+            setIcon(R.drawable.appbar_icon)
+            setDisplayUseLogoEnabled(true)
+            setDisplayShowHomeEnabled(true)
+            setDisplayShowTitleEnabled(false)
+        }
 
         searchAdapter = SearchAdapter(
             this@MainActivity,
@@ -147,7 +149,7 @@ class MainActivity : AppCompatActivity() {
                 btnRefresh.visibility = View.VISIBLE
 
                 ActivityCompat.requestPermissions(
-                    this@MainActivity, REQUIRED_PERMISSIONS.toTypedArray(), REQUEST_CODE_PERMISSIONS
+                    this@MainActivity, getRequiredPermissions().toTypedArray(), REQUEST_CODE_PERMISSIONS
                 )
             }
 
@@ -187,7 +189,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun permissionsGranted() = REQUIRED_PERMISSIONS.all {
+    private fun permissionsGranted() = getRequiredPermissions().all {
         ContextCompat.checkSelfPermission(
             baseContext, it
         ) == PackageManager.PERMISSION_GRANTED
@@ -233,8 +235,15 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+    private fun getRequiredPermissions(): List<String> {
+        val targetSdkVersion: Int = applicationInfo.targetSdkVersion
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && targetSdkVersion >= Build.VERSION_CODES.TIRAMISU)
+            listOf(Manifest.permission.READ_MEDIA_VIDEO)
+        else
+            listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+
     companion object {
         private const val REQUEST_CODE_PERMISSIONS = 10
-        private val REQUIRED_PERMISSIONS = listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
 }
