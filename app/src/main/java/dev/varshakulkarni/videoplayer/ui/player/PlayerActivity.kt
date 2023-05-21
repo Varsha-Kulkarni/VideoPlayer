@@ -114,6 +114,13 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
+        supportActionBar?.apply {
+            setIcon(R.drawable.appbar_icon)
+            setDisplayUseLogoEnabled(true)
+            setDisplayShowHomeEnabled(true)
+            setDisplayShowTitleEnabled(false)
+        }
+
         setupMenu()
 
         intent.getStringExtra("youtube_link")?.let {
@@ -341,7 +348,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         )
     }
 
-    private fun popViewSettings() {
+    private fun setupPopView() {
         val precision = 10.0.pow(1.0)
         pitchValueText =
             popupView?.findViewById<EditText>(R.id.pitchValueText)
@@ -596,7 +603,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
 
         popupWindow.showAtLocation(view, Gravity.CENTER, 30, 30)
 
-        popViewSettings()
+        setupPopView()
     }
 
     fun showYoutubePlaybackError() {
