@@ -17,7 +17,7 @@
 
 # Contributions
 
-Most welcome to file issues, PRs.
+Most welcome to file issues, PRs. Please see [Contributing Guidelines](https://github.com/Varsha-Kulkarni/VideoPlayer/blob/main/CONTRIBUTING.md)
 
 # License
 
