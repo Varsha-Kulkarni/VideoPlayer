@@ -495,7 +495,10 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                     tempoValueText?.text =
                         String.format(resources.getString(R.string.tempo_value), i)
 
-                    val newPlaybackParameters = PlaybackParameters(tempo)
+                    val currentPlaybackParameters = player?.playbackParameters
+                    val pitch: Float = currentPlaybackParameters?.pitch ?: 1f
+
+                    val newPlaybackParameters = PlaybackParameters(tempo, pitch)
                     updatePlaybackParameters(newPlaybackParameters)
                 }
 
@@ -515,7 +518,10 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
             tempoValueText?.text =
                 String.format(resources.getString(R.string.tempo_value), 100)
 
-            val newPlaybackParameters = PlaybackParameters(tempo)
+            val currentPlaybackParameters = player?.playbackParameters
+            val pitch: Float = currentPlaybackParameters?.pitch ?: 1f
+
+            val newPlaybackParameters = PlaybackParameters(tempo, pitch)
             updatePlaybackParameters(newPlaybackParameters)
         }
 
@@ -530,8 +536,11 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                     tempoSeekBar.progress = newProgress
                     tempoValueText?.text = newProgress.toString()
 
+                    val currentPlaybackParameters = player?.playbackParameters
+                    val pitch: Float = currentPlaybackParameters?.pitch ?: 1f
+
                     val newTempo: Float = newProgress / 100f
-                    val newPlaybackParameters = PlaybackParameters(newTempo)
+                    val newPlaybackParameters = PlaybackParameters(newTempo, pitch)
                     updatePlaybackParameters(newPlaybackParameters)
                 }
             }
@@ -548,8 +557,11 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
                     tempoSeekBar.progress = newProgress
                     tempoValueText?.text = newProgress.toString()
 
+                    val currentPlaybackParameters = player?.playbackParameters
+                    val pitch: Float = currentPlaybackParameters?.pitch ?: 1f
+
                     val newTempo: Float = newProgress / 100f
-                    val newPlaybackParameters = PlaybackParameters(newTempo)
+                    val newPlaybackParameters = PlaybackParameters(newTempo, pitch)
                     updatePlaybackParameters(newPlaybackParameters)
                 }
             }
